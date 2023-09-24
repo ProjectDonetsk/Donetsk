@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{9ba1aab7-3c29-4043-88a2-0733bdba52af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\exception">
+      <UniqueIdentifier>{67571f10-529c-4ebd-94b6-2cebbbb62a35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\utils">
+      <UniqueIdentifier>{03fd645c-a59f-4d26-950c-b411df71f725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hook_lib">
+      <UniqueIdentifier>{997a4fac-6cde-43a6-84df-2e0e58b4b7fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hook_lib\game">
+      <UniqueIdentifier>{0999b80b-b47c-4d8e-8776-f5c778bcac9f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\utils\binary_resource.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\hardware_breakpoint.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\hook.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\http.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\io.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\memory.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\nt.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\signature.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\smbios.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\string.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="common\exception\minidump.cpp">
+      <Filter>common\exception</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>hook_lib</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils\thread.cpp">
+      <Filter>common\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="structs.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
+    <ClCompile Include="assets.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
+    <ClCompile Include="splashscreen.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\utils\binary_resource.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\concurrency.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\finally.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\hardware_breakpoint.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\hook.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\http.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\io.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\memory.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\nt.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\signature.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\smbios.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\string.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="common\exception\minidump.hpp">
+      <Filter>common\exception</Filter>
+    </ClInclude>
+    <ClInclude Include="Main.hpp">
+      <Filter>hook_lib</Filter>
+    </ClInclude>
+    <ClInclude Include="MinHook.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="functions.hpp">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils\thread.hpp">
+      <Filter>common\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="structs.h">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="assets.h">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="ini.h">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="csv.hpp" />
+  </ItemGroup>
+</Project>
