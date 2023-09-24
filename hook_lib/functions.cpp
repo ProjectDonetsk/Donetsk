@@ -372,6 +372,7 @@ cmd_function_s ddldump_f_VAR;
 cmd_function_s weapondefdump_f_VAR;
 cmd_function_s view_vehicle_ents_f_VAR;
 cmd_function_s loadout_save_f_VAR;
+cmd_function_s FastRestart_f_VAR;
 
 CmdArgs* cmd_args;
 
