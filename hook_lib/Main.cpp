@@ -865,6 +865,11 @@ bool DDL_SetUInt_Detour(const DDLState* state, DDLContext* ddlContext, unsigned 
 	return ddl_setuint.stub<bool>(state, ddlContext, val);
 }
 
+void SV_CmdsMP_FastRestart_f() {
+	auto SV_CmdsMP_RequestMapRestart = reinterpret_cast<void(*)(bool loadScripts, bool migrate)>(0x14136C310_g);
+	SV_CmdsMP_RequestMapRestart(1, 0);
+}
+
 void* exception_handler_handle;
 BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 	g_Addrs.ModuleBase = (uintptr_t)(GetModuleHandle(0));
@@ -904,6 +909,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		//Cmd_AddCommandInternal("view_vehicle_ents", Cmd_ViewVehicleEnts_f, &view_vehicle_ents_f_VAR);
 		//Cmd_AddCommandInternal("loadout_save", Cmd_LoadoutSave_f, &loadout_save_f_VAR);
 		Cmd_AddCommandInternal("loadout_save", SaveOperatorSkins, &loadout_save_f_VAR);
+		Cmd_AddCommandInternal("fast_restart", SV_CmdsMP_FastRestart_f, &FastRestart_f_VAR);
 
 		// patch ui_maxclients limit
 		utils::hook::nop(0x140F30210_g, 5);

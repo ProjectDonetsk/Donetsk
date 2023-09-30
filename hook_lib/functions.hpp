@@ -125,6 +125,7 @@ extern cmd_function_s ddldump_f_VAR;
 extern cmd_function_s weapondefdump_f_VAR;
 extern cmd_function_s view_vehicle_ents_f_VAR;
 extern cmd_function_s loadout_save_f_VAR;
+extern cmd_function_s FastRestart_f_VAR;
 extern CmdArgs* cmd_args;
 
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler);
