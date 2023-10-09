@@ -138,6 +138,5 @@
     <ClInclude Include="json.hpp">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
-    <ClInclude Include="csv.hpp" />
   </ItemGroup>
 </Project>

@@ -1,8 +1,67 @@
 #include "Main.hpp"
 
-#include "csv.hpp"
-
 void* exception_handler;
+
+bool isSubStr(std::string str, std::string subStr)
+{
+	size_t pos = str.find(subStr);
+	if (pos != std::string::npos)
+	{
+		return true;
+	}
+	return false;
+}
+
+float strToFloat(const std::string& str)
+{
+	float num = 0.0f;
+	float fraction = 0.1f;
+	bool isNegative = false;
+
+	size_t i = 0;
+	if (str[i] == '-')
+	{
+		isNegative = true;
+		i++;
+	}
+
+	for (; i < str.length(); i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			num = num * 10.0f + static_cast<float>(str[i] - '0');
+		}
+		else if (str[i] == '.')
+		{
+			i++;
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	for (; i < str.length(); i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			num += (str[i] - '0') * fraction;
+			fraction *= 0.1f;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if (isNegative)
+	{
+		num = -num;
+	}
+
+	return num;
+}
 
 void backtrace(const char* func) {
 	const int trace_count = 15;
@@ -20,6 +79,61 @@ void backtrace(const char* func) {
 			nlog("%p:", (uintptr_t)trace_back[i]);
 			printf("%p:", (uintptr_t)trace_back[i]);
 		}
+	}
+}
+
+int BG_Omnvar_GetType(OmnvarDef* ovDef);
+
+void DumpOmnvars()
+{
+	auto G_Omnvar_GetData = reinterpret_cast<OmnvarData * (*)(unsigned int index, int clientNum, uintptr_t ps)>(0x140FC5110_g);
+	auto BG_Omnvar_GetTypeString = reinterpret_cast<const char* (*)(OmnvarDef * omnvar)>(0x140CD5900_g);
+	auto NetConstStrings_GetLuiStringIndex = reinterpret_cast<int(*)(const char* newValue, unsigned int*)>(0x1410F0F40_g);
+	auto BG_Omnvar_GetValueString = reinterpret_cast<void(*)(OmnvarDef * ovDef, OmnvarData * ovData, char* retStr, unsigned int valueBufLen)>(0x140CD5980_g);
+
+	g_entities = *reinterpret_cast<gentity_s**>(0x14BC20F00_g);
+
+	uintptr_t psHost = ((uintptr_t)(g_entities + 0x150));
+
+	int s_omnvarDefCount = *(int*)(0x145C48518_g);
+	OmnvarDef* OmnvarDefs = (OmnvarDef*)(0x145C48580_g);
+	for (int i = 0; i < s_omnvarDefCount; ++i)
+	{
+		OmnvarDef* omnvar = &OmnvarDefs[i];
+		OmnvarData* data = G_Omnvar_GetData(i, 0, psHost);
+		const char* typeStr = BG_Omnvar_GetTypeString(omnvar);
+		int type = BG_Omnvar_GetType(omnvar);
+
+		std::cout << "omnvar '" << omnvar->name << "' (" << typeStr << ") ";
+		if (type == OMNVAR_TYPE_BOOL)
+		{
+			std::cout << "value(" << data->current.enabled << ") ";
+		}
+		else if (type == OMNVAR_TYPE_FLOAT)
+		{
+			std::cout << "value(" << data->current.value << ") ";
+		}
+		else if (type == OMNVAR_TYPE_INT)
+		{
+			std::cout << "value(" << data->current.integer << ") ";
+		}
+		else if (type == OMNVAR_TYPE_UINT || type == OMNVAR_TYPE_TIME)
+		{
+			std::cout << "value(" << data->current.unsignedInteger << ") ";
+		}
+		else if (type == OMNVAR_TYPE_NCS_LUI)
+		{
+			char currentStr[100] = { NULL };
+			BG_Omnvar_GetValueString(omnvar, data, currentStr, 100);
+
+			std::cout << "value'" << currentStr << "' ";
+		}
+		else
+		{
+			std::cout << "value(" << data->current.unsignedInteger << ") ";
+		}
+
+		std::cout << std::endl;
 	}
 }
 
@@ -85,7 +199,7 @@ bool initiatedevgui;
 
 void CG_DrawWaterMark() {
 	float white[4] = { 1.0f, 1.0f, 1.0f, 0.2f };
-	CL_DrawText(0x14EF2DEA0_g, "Fuck off activision you cunts", 0x7FFFFFFF, *reinterpret_cast<uintptr_t*>(0x14EEB0C68_g), 0, 400.0f, 1, 1, 0.80000001, 0.80000001, white, 7);
+	// CL_DrawText(0x14EF2DEA0_g, "Fuck off activision you cunts", 0x7FFFFFFF, *reinterpret_cast<uintptr_t*>(0x14EEB0C68_g), 0, 400.0f, 1, 1, 0.80000001, 0.80000001, white, 7);
 }
 
 void CL_ScreenMP_DrawOverlay_Detour() {
@@ -183,6 +297,29 @@ void G_CmdsMP_ClientCommand_Detour(int clientNum) {
 				}
 			}
 		}
+
+		if (strcmp(command, "give_akimbo") == 0)
+		{
+			if (CheatsOk(clientNum))
+			{
+				SV_Cmd_ArgvBuffer(1, command, 1024);
+				Weapon weap;
+				if (BG_Weapons_GetFullWeaponForName(command, &weap, BG_FindBaseWeaponForName))
+				{
+					if (SV_Cmd_Argc() == 3)
+					{
+						SV_Cmd_ArgvBuffer(2, command, 1024);
+						weap.weaponCamo = atoi(command);
+					}
+					if (G_Weapon_GivePlayerWeapon(client, 0, &weap, 1, 0, 0))
+					{
+						G_Items_AddAmmo(client, &weap, 0, 9999, 1);
+						G_Weapon_SelectWeapon(clientNum, &weap);
+					}
+				}
+			}
+		}
+
 		if (strcmp(command, "ks_give") == 0) {
 			if (CheatsOk(clientNum)) {
 				SV_Cmd_ArgvBuffer(1, command, 1024);
@@ -228,6 +365,43 @@ void G_CmdsMP_ClientCommand_Detour(int clientNum) {
 				}
 			}
 		}
+
+		/*if (strcmp(command, "scmd") == 0)
+		{
+			if (CheatsOk(clientNum) && clientNum == 0)
+			{
+				char msgbuf[500];
+				std::string cmdline = "";
+				if (SV_Cmd_Argc() > 1)
+				{
+					for (int i = 0; i < SV_Cmd_Argc() - 1; i++)
+					{
+						SV_Cmd_ArgvBuffer(1 + i, msgbuf, 500);
+						if (i == 0)
+						{
+							cmdline = msgbuf;
+						}
+						else
+						{
+							cmdline = cmdline + " " + std::string(msgbuf);
+						}
+						std::cout << 1 + i << ": '" << msgbuf << "'" << std::endl;
+						memset(msgbuf, 0, 500);
+					}
+
+					const char* cCmdLine = cmdline.c_str();
+					memcpy(msgbuf, cCmdLine, cmdline.length() + 1);
+					std::cout << "msgbug: '" << msgbuf << "'" << std::endl;
+
+					SvClient* ms_clients = *reinterpret_cast<SvClient**>(0x14E17F690_g + (8 * clientNum));
+					if (ms_clients)
+					{
+						ms_clients->SendServerCommand(1, msgbuf);
+					}
+				}
+			}
+		}*/
+
 		if (strcmp(command, "viewpos") == 0) {
 			if (CheatsOk(clientNum)) {
 				char msgbuf[500];
@@ -235,6 +409,39 @@ void G_CmdsMP_ClientCommand_Detour(int clientNum) {
 				if (ms_clients) {
 					snprintf(msgbuf, 500, "f \"viewpos: (%.2f, %.2f, %.2f)\"", g_entities[clientNum].r_currentOrigin[0], g_entities[clientNum].r_currentOrigin[1], g_entities[clientNum].r_currentOrigin[2]);
 					ms_clients->SendServerCommand(1, msgbuf);
+				}
+			}
+		}
+
+		if (strcmp(command, "setpos") == 0)
+		{
+			if (CheatsOk(clientNum) && clientNum == 0)
+			{
+				if (SV_Cmd_Argc() == 4)
+				{
+					char xBuf[100];
+					char yBuf[100];
+					char zBuf[100];
+
+					SV_Cmd_ArgvBuffer(1, xBuf, 100);
+					SV_Cmd_ArgvBuffer(2, yBuf, 100);
+					SV_Cmd_ArgvBuffer(3, zBuf, 100);
+
+					float x = strToFloat(xBuf);
+					float y = strToFloat(yBuf);
+					float z = strToFloat(zBuf);
+
+					struct gclient_s
+					{
+						char __padding[0x30];
+						float coords[3];
+					};
+					g_entities = *reinterpret_cast<gentity_s**>(0x14BC20F00_g);
+
+					gclient_s* host = (gclient_s*)g_entities[0].client;
+					host->coords[0] = x;
+					host->coords[1] = y;
+					host->coords[2] = z;
 				}
 			}
 		}
@@ -254,7 +461,8 @@ void CL_InputMP_ExecBinding_Detour(int localClientNum, int kb, int key, int forc
 	cl_inputmp_execbinding.stub<void>(localClientNum, kb, key, forceNotify);
 }
 
-void Cmd_Exec_Internal(bool isSuperUser) {
+void Cmd_Exec_Internal(bool isSuperUser)
+{
 	const char* cmdbuf;
 	const char* file;
 	auto DB_FindXAssetHeader = reinterpret_cast<uintptr_t(*)(XAssetType type, const char* givenName, int allowCreateDefault)>(0x1411AA890_g);
@@ -324,15 +532,353 @@ extern "C" __declspec(dllexport) int DiscordCreate() {
 	return 1;
 }
 
-utils::hook::detour cl_keys_event;
-void CL_Keys_Event_Detour(int localClientNum, int key, bool down, unsigned int time, int virtualKey, int controllerIndex) {
-	auto Con_ToggleConsole = reinterpret_cast<void(*)()>(0x1415B18C0_g);
-	auto DevGui_Toggle = reinterpret_cast<void(*)()>(0x1417E9DA0_g);
+void SaveInventory()
+{
+	auto DDL_MoveToPath = reinterpret_cast<bool(*)(const DDLState * fromState, DDLState * toState, int depth, const char** path)>(0x142052430_g);
+	//auto Com_DDL_ConvertNavStringToHash = reinterpret_cast<int(*)(const char*)>(0x14129EE80_g);
+	//auto LiveStorage_InitializeDDLStateForStatsGroup = reinterpret_cast<void(*)(const DDLDef * def, DDLState * state, int statsGroup)>(0x1410CAD70_g);
+	auto Com_PlayerData_GetStatsBlob = reinterpret_cast<int(*)(int)>(0x1410CA7A0_g);
+	auto DDL_GetType = reinterpret_cast<DDLType(*)(const DDLState*)>(0x142051DD0_g);
+	auto DDL_GetString = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051CD0_g);
+	auto DDL_GetEnum = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x1420519E0_g);
+	auto DDL_GetInt = reinterpret_cast<int(*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051BF0_g);
+	auto DDL_GetRootState = reinterpret_cast<DDLState * (*)(DDLState * result, const DDLDef * ddlDef)>(0x142051C70_g);
+	auto CL_PlayerData_GetDDLBuffer = reinterpret_cast<bool(*)(DDLContext * context, int controllerIndex, int statsSource, __int32 statsGroup)>(0x1415C7940_g);
+	auto Com_DDL_LoadAsset = reinterpret_cast<const DDLDef * (*)(const char* fileName)>(0x14129F3B0_g);
+	auto Com_ParseNavStrings = reinterpret_cast<bool(*)(const char* pStr, const char** navStrings, int navStringMax, int* navStringCount)>(0x1412A02E0_g);
+	auto Com_DDL_CreateContext = reinterpret_cast<bool(*)(void* buffer, int len, const DDLDef * def, DDLContext* const ddlContext, uintptr_t a5, void* userData)>(0x14129EEC0_g);
 
-	if (down) {
-		switch (key) {
+	DDLContext context;
+	DDLDef* ddlDef;
+	DDLState state;
+	char buffer[200];
+	char* navStrings[32]{};
+	int navStringCount;
+	char path[MAX_PATH + 1];
+	strcpy(path, Dvar_GetStringSafe("LOOQOTRNTN"));
+	strcat(path, "\\players\\inventory.json");
+	nlohmann::json inventoryJson;
+	if (CL_PlayerData_GetDDLBuffer(&context, 0, STATS_OFFLINE, STATSGROUP_PRIVATELOADOUTS)) {
+		ddlDef = (DDLDef*)context.def;
+		// start of operator customization related
+		for (int i = 0; i < ddlDef->enumCount; ++i)
+		{
+			if (!strcmp(ddlDef->enumList[i].name, "Operator")) {
+				for (int j = 0; j < ddlDef->enumList[i].memberCount; ++j)
+				{
+					// get operator skins
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.skin", ddlDef->enumList[i].members[j]);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						int OP_opSkin = DDL_GetInt(&state, &context);
+						inventoryJson["Operator"]["OperatorSkin"][ddlDef->enumList[i].members[j]] = OP_opSkin;
+					}
+					// execution ids
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.execution", ddlDef->enumList[i].members[j]);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						inventoryJson["Operator"]["OperatorExecution"][ddlDef->enumList[i].members[j]] = DDL_GetInt(&state, &context);
+					}
+				}
+			}
+		}
+		// selected operator
+		for (int i = 0; i < 2; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "customizationSetup.operators.%d", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["Operator"]["SelectedOperator"][i] = DDL_GetEnum(&state, &context);
+			}
+		}
+		// operator Index
+		DDL_GetRootState(&state, ddlDef);
+		sprintf_s(buffer, "customizationSetup.selectedOperatorIndex");
+		Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+		if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+		{
+			inventoryJson["Operator"]["OperatorIndex"] = DDL_GetInt(&state, &context);
+		}
+		// operator watch
+		DDL_GetRootState(&state, ddlDef);
+		sprintf_s(buffer, "customizationSetup.operatorWatch");
+		Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+		if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+		{
+			inventoryJson["Operator"]["OperatorWatch"] = DDL_GetInt(&state, &context);
+		}
+		// end of operator customization related
+		// start of weapon customization
+
+		for (int i = 0; i < 10; ++i) {
+			// get weapon
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "squadMembers.loadouts.%d.name", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				// test by getting loadout names
+				inventoryJson["Loadouts"][i] = { {"name", DDL_GetString(&state, &context)} };
+			}
+			for (int j = 0; j < 2; ++j) {
+				// get camos
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.camo", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j] = { {"camo", DDL_GetEnum(&state, &context)} };
+				}
+				// get weapons
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.weapon", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j].push_back({ "weapon", DDL_GetEnum(&state, &context) });
+				}
+				// get variant ids
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.variantID", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j].push_back({ "variantId", DDL_GetInt(&state, &context) });
+				}
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.lootItemID", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j].push_back({ "lootItemID", DDL_GetInt(&state, &context) });
+				}
+				for (int k = 0; k < 5; ++k) {
+					// get attachments & variants
+					std::string attachmentName;
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.attachmentSetup.%d.attachment", i, j, k);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						attachmentName = DDL_GetEnum(&state, &context);
+					}
+
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.attachmentSetup.%d.variantID", i, j, k);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						inventoryJson["Loadouts"][i]["weaponSetup"][j]["attachments"][k] = { attachmentName.c_str(), DDL_GetInt(&state, &context) };
+					}
+				}
+			}
+
+		}
+		// printf("Saved Inventory!\n");
+	}
+	else {
+		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer, called before initialized?");
+	}
+
+	std::ofstream JsonOut(path);
+	JsonOut << inventoryJson;
+
+}
+
+void LoadInventory()
+{
+	auto Cmd_LocalControllerIndex = reinterpret_cast<int(*)()>(0x141298040_g);
+	auto LiveStorage_GetActiveStatsSource = reinterpret_cast<int(*)(int)>(0x1412A1EB0_g);
+	auto LiveStorage_CreateDDLContext = reinterpret_cast<bool(*)(const int controllerIndex, int statsGroup, int statsSource, DDLContext * context, uintptr_t a5, void* userData)>(0x1412A13C0_g);
+	auto DDL_MoveToPath = reinterpret_cast<bool(*)(const DDLState * fromState, DDLState * toState, int depth, const char** path)>(0x142052430_g);
+	//auto Com_DDL_ConvertNavStringToHash = reinterpret_cast<int(*)(const char*)>(0x14129EE80_g);
+	//auto LiveStorage_InitializeDDLStateForStatsGroup = reinterpret_cast<void(*)(const DDLDef * def, DDLState * state, int statsGroup)>(0x1410CAD70_g);
+	auto Com_PlayerData_GetStatsBlob = reinterpret_cast<int(*)(int)>(0x1410CA7A0_g);
+	auto DDL_GetType = reinterpret_cast<DDLType(*)(const DDLState*)>(0x142051DD0_g);
+	auto DDL_GetString = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051CD0_g);
+	auto DDL_GetEnum = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x1420519E0_g);
+	auto DDL_GetInt = reinterpret_cast<int(*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051BF0_g);
+	auto DDL_GetRootState = reinterpret_cast<DDLState * (*)(DDLState * result, const DDLDef * ddlDef)>(0x142051C70_g);
+	auto CL_PlayerData_GetDDLBuffer = reinterpret_cast<bool(*)(DDLContext * context, int controllerIndex, int statsSource, __int32 statsGroup)>(0x1415C7940_g);
+	auto Com_DDL_LoadAsset = reinterpret_cast<const DDLDef * (*)(const char* fileName)>(0x14129F3B0_g);
+	auto Com_ParseNavStrings = reinterpret_cast<bool(*)(const char* pStr, const char** navStrings, int navStringMax, int* navStringCount)>(0x1412A02E0_g);
+	auto Com_DDL_CreateContext = reinterpret_cast<bool(*)(void* buffer, int len, const DDLDef * def, DDLContext* const ddlContext, uintptr_t a5, void* userData)>(0x14129EEC0_g);
+	auto StringTable_GetColumnValueForRow = reinterpret_cast<const char* (*)(StringTable*, int, int)>(0x1413E2B40_g);
+	auto DDL_SetInt = reinterpret_cast<void (*)(DDLState * param_1, DDLContext * param_2, int param_3)>(0x142052820_g);
+	auto DDL_SetEnum = reinterpret_cast<bool(*)(DDLState * param_1, DDLContext * param_2, const char* param_3)>(0x142052710_g);
+	auto DDL_SetString = reinterpret_cast<bool(*)(DDLState * param_1, DDLContext * param_2, const char* param_3)>(0x1420528D0_g);
+
+	DDLContext context;
+	DDLDef* ddlDef;
+	DDLState state;
+	char buffer[200];
+	char* navStrings[32]{};
+	int navStringCount;
+	char path[MAX_PATH + 1];
+	strcpy(path, Dvar_GetStringSafe("LOOQOTRNTN"));
+	strcat(path, "\\players\\inventory.json");
+	if (file_exists(path)) {
+		std::ifstream jsonPath(path);
+		nlohmann::json inventoryJson = nlohmann::json::parse(jsonPath);
+		if (CL_PlayerData_GetDDLBuffer(&context, 0, STATS_OFFLINE, STATSGROUP_PRIVATELOADOUTS)) {
+			ddlDef = (DDLDef*)context.def;
+			for (int i = 0; i < ddlDef->enumCount; ++i)
+			{
+				if (!strcmp(ddlDef->enumList[i].name, "Operator")) {
+					for (int j = 0; j < ddlDef->enumList[i].memberCount; ++j)
+					{
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.skin", ddlDef->enumList[i].members[j]);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorSkin"][ddlDef->enumList[i].members[j]]);
+						}
+						// execution ids
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.execution", ddlDef->enumList[i].members[j]);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorExecution"][ddlDef->enumList[i].members[j]]);
+						}
+
+					}
+				}
+			}
+			for (int i = 0; i < 2; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "customizationSetup.operators.%d", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetEnum(&state, &context, inventoryJson["Operator"]["SelectedOperator"][i].get<std::string>().c_str());
+				}
+			}
+			// operator Index
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "customizationSetup.selectedOperatorIndex");
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorIndex"]);
+			}
+
+			// operator watch
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "customizationSetup.operatorWatch");
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorWatch"]);
+			}
+			// start of weapon customization
+			for (int i = 0; i < 10; ++i) {
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.name", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetString(&state, &context, inventoryJson["Loadouts"][i]["name"].get<std::string>().c_str());
+				}
+				for (int j = 0; j < 2; ++j) {
+					// set camo
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.camo", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["camo"].get<std::string>().c_str());
+					}
+					// set weapon
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.weapon", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["weapon"].get<std::string>().c_str());
+					}
+					// set variantid
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.variantID", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetInt(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["variantId"]);
+					}
+					// set lootItemId
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.lootItemID", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetInt(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["lootItemID"]);
+					}
+					for (int k = 0; k < 5; ++k) {
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.attachmentSetup.%d.attachment", i, j, k);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["attachments"][k][0].get<std::string>().c_str());
+						}
+
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.attachmentSetup.%d.variantID", i, j, k);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetInt(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["attachments"][k][1]);
+						}
+					}
+				}
+			}
+
+		}
+		else {
+			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer, called before initialized?");
+		}
+		printf("Loaded Inventory!\n");
+	}
+	else {
+		// Com_SetErrorMessage("[DLL ERROR] Attempted to load inventory from \"players/inventory.json\" but file does not exist. Use 'saveinv' to save your inventory.");
+		printf("Attempted to load inventory from \"players/inventory.json\" but file does not exist\n");
+	}
+}
+
+utils::hook::detour cl_keys_event;
+void CL_Keys_Event_Detour(int localClientNum, int key, bool down, unsigned int time, int virtualKey, int controllerIndex)
+{
+	auto Con_ToggleConsole = reinterpret_cast<void(*)()>(0x1415B18C0_g);
+	auto Con_ToggleConsoleOutput = reinterpret_cast<void(*)()>(0x1415B1930_g);
+	auto DevGui_Toggle = reinterpret_cast<void(*)()>(0x1417E9DA0_g);
+	auto Con_IsActive = reinterpret_cast<bool(*)(int localClientNum)>(0x1415b0EF0_g);
+
+	if (down)
+	{
+		switch (key)
+		{
 		case K_GRAVE:
-			Con_ToggleConsole();
+
+			if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
+			{
+				if (Con_IsActive(localClientNum) == false)
+				{
+					Con_ToggleConsole();
+				}
+				Con_ToggleConsoleOutput();
+			}
+			else
+			{
+				Con_ToggleConsole();
+			}
 			return;
 			break;
 		case K_F1:
@@ -346,8 +892,12 @@ void CL_Keys_Event_Detour(int localClientNum, int key, bool down, unsigned int t
 }
 
 utils::hook::detour PM_WeaponUseAmmo;
-void PM_WeaponUseAmmo_Detour(__int64 playerstate, Weapon* weapon, char a3, int a4, int hand) {
-	if (!player_sustainammo->current.enabled) {
+void PM_WeaponUseAmmo_Detour(__int64 playerstate, Weapon* weapon, char a3, int a4, int hand)
+{
+	bool sv_cheats = Dvar_GetBoolSafe("NTPNRQTKNP");
+
+	if (!(player_sustainammo->current.enabled && sv_cheats))
+	{
 		PM_WeaponUseAmmo.stub<void>(playerstate, weapon, a3, a4, hand);
 	}
 }
@@ -371,6 +921,11 @@ dvar_t* Dvar_RegisterString_Detour(const char* dvarName, const char* value, unsi
 	return dvar_registerstring.stub<dvar_t*>(dvarName, value, flags, description);
 }
 
+void GamerProfile_SetDataByName(unsigned int controllerIndex, const char* settingName, float settingValue) {
+	auto func = reinterpret_cast<void(*)(int, const char*, float)>(0x1415D8BD0_g);
+	return func(controllerIndex, settingName, settingValue);
+}
+
 utils::hook::detour seh_stringed_getstring;
 const char* SEH_StringEd_GetString_Detour(const char* pszReference) {
 	const char* ret = seh_stringed_getstring.stub<const char*>(pszReference);
@@ -382,7 +937,10 @@ const char* SEH_StringEd_GetString_Detour(const char* pszReference) {
 		return pszReference;
 	}
 
-	if (
+	GamerProfile_SetDataByName(0, "acceptedEULA", 1);
+	GamerProfile_SetDataByName(0, "hasEverPlayed_MainMenu", 1);
+
+	if (strstr(pszReference, "LUA_MENU/MAPNAME_ANIYAH") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_DEADZONE") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_M_CAGE") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_CAVE_AM") ||
@@ -408,6 +966,31 @@ const char* SEH_StringEd_GetString_Detour(const char* pszReference) {
 		return "^1no work";
 	}
 
+	if (strstr(pszReference, "MENU/CAMPAIGN"))
+	{
+		return "^3Campaign is not available in this build of the game.";
+	}
+
+	if (strstr(pszReference, "LUA_MENU/LOCAL_COOP_DESC"))
+	{
+		return "^3CO-OP is not available in this build of the game.";
+	}
+
+	if (strstr(pszReference, "LUA_MENU/LOCAL_MULTIPLAYER_CAPS"))
+	{
+		return "MULTIPLAYER";
+	}
+
+	if (strstr(pszReference, "MENU_SP/CAMPAIGN"))
+	{
+		return "^1CAMPAIGN";
+	}
+
+	if (strstr(pszReference, "LUA_MENU/LOCAL_COOP_CAPS"))
+	{
+		return "^1LOCAL CO-OP";
+	}
+
 	return ret;
 }
 
@@ -428,6 +1011,8 @@ void PartyHost_StartPrivateParty_Detour(int localClientNum, int localControllerI
 	Cbuf_AddText("exec autoexec.cfg");
 
 	partyhost_startprivateparty.stub<void>(localClientNum, localControllerIndex, currentlyActive, hostType);
+
+	LoadInventory();
 }
 
 bool Live_IsUserSignedInToDemonware_Detour() {
@@ -472,6 +1057,17 @@ void set_int_f() {
 	}
 }
 
+void set_float_f()
+{
+	char command[500];
+	if (Cmd_Argc() == 3) {
+		Cmd_ArgvBuffer(1, command, 500);
+		uintptr_t address = atoll(command) + base;
+		Cmd_ArgvBuffer(2, command, 500);
+		utils::hook::set<float>(address, strToFloat(command));
+	}
+}
+
 void set_pointer_f() {
 	char command[500];
 	if (Cmd_Argc() == 3) {
@@ -495,9 +1091,168 @@ void Cmd_OpenMenu_f() {
 	}
 }
 
-void Cmd_AddBot_f() {
-	auto SV_ClientMP_AddTestClient = reinterpret_cast<uintptr_t(*)()>(0x14136E570_g);
-	SV_ClientMP_AddTestClient();
+short* SV_ClientMP_AddTestClient()
+{
+	uintptr_t SV_ClientMP_AddTestClient_func_address = 0x14136e570_g;
+	short* (__cdecl * SV_ClientMP_AddTestClient_func)(void) = (short* (__cdecl*)(void))SV_ClientMP_AddTestClient_func_address;
+
+	return SV_ClientMP_AddTestClient_func();
+}
+
+void GScr_AddEntity(short* entity)
+{
+	auto GScr_AddEntity_func = reinterpret_cast<void(*)(short* ent)>(0x1412578a0_g);
+	GScr_AddEntity_func(entity);
+}
+
+void SV_ClientMP_SpawnBotOrTestClient(short* entity)
+{
+	auto SV_ClientMP_SpawnBotOrTestClient_func = reinterpret_cast<void(*)(short* ent)>(0x141373640_g);
+	SV_ClientMP_SpawnBotOrTestClient_func(entity);
+}
+
+void Cmd_AddBot_f()
+{
+	auto ent = SV_ClientMP_AddTestClient();
+	GScr_AddEntity(ent);
+	SV_ClientMP_SpawnBotOrTestClient(ent);
+}
+
+void SV_CmdsMP_MapRestart_f()
+{
+	auto SV_CmdsMP_RequestMapRestart = reinterpret_cast<void(*)(bool loadScripts, bool migrate)>(0x14136C310_g);
+	SV_CmdsMP_RequestMapRestart(1, 0);
+}
+
+void SV_CmdsMP_FastRestart_f()
+{
+	auto SV_CmdsMP_RequestMapRestart = reinterpret_cast<void(*)(bool loadScripts, bool migrate)>(0x14136C310_g);
+	auto CL_Screen_Update = reinterpret_cast<void(*)()>(0x1415caa50_g);
+	SV_CmdsMP_RequestMapRestart(0, 0);
+	// CL_Screen_Update();
+}
+
+OmnvarDef* BG_Omnvar_GetDef(unsigned int index)
+{
+	auto BG_Omnvar_GetDef_func = reinterpret_cast<OmnvarDef* (*)(int index)>(0x140CD5830_g);
+	return BG_Omnvar_GetDef_func(index);
+
+	/*OmnvarDef* OmnvarDefs = (OmnvarDef*)(0x145C48580_g);
+	return OmnvarDefs + index;*/
+}
+
+uintptr_t G_GetEntityPlayerState(gentity_s* ent)
+{
+	uintptr_t cl = ent->client;
+
+	// return &cl->ps;
+	return cl; // client + 0x0 = playerstate
+}
+
+int G_Main_GetTime()
+{
+	return *(int*)0x14BC21730;
+}
+
+int BG_Omnvar_GetType(OmnvarDef* ovDef)
+{
+	const char* type = (const char*)((char*)ovDef + 0x26);
+	return *type;
+}
+
+void Cmd_Omnvar_Set_f()
+{
+	char ovName[100];
+	char newValue[100];
+
+	auto BG_Omnvar_GetIndexByName = reinterpret_cast<unsigned int(*)(const char* name)>(0x140CD5870_g);
+	auto BG_Omnvar_GetDef = reinterpret_cast<OmnvarDef * (*)(int index)>(0x140CD5830_g);
+	auto G_Omnvar_GetData = reinterpret_cast<OmnvarData* (*)(unsigned int index, int clientNum, uintptr_t ps)>(0x140FC5110_g);
+	auto BG_Omnvar_GetTypeString = reinterpret_cast<const char*(*)(OmnvarDef* omnvar)>(0x140CD5900_g);
+	auto G_Omnvar_MarkChanged = reinterpret_cast<void(*)(OmnvarData * omnvar)>(0x140FC51B0_g);
+	auto NetConstStrings_GetLuiStringIndex = reinterpret_cast<int(*)(const char* newValue, unsigned int*)>(0x1410F0F40_g);
+
+	g_entities = *reinterpret_cast<gentity_s**>(0x14BC20F00_g);
+
+	if (Cmd_Argc() != 3)
+	{
+		printf("setOmnvar usage: setOmnvar <omnvar_name> <value>\n");
+		return;
+	}
+
+	Cmd_ArgvBuffer(1, ovName, 100);
+	Cmd_ArgvBuffer(2, newValue, 100);
+
+	unsigned int omnvarIndex = BG_Omnvar_GetIndexByName(ovName);
+	if (omnvarIndex == -1)
+	{
+		printf("Omnvar %s not found\n", ovName);
+		return;
+	}
+	OmnvarDef* ovDef = BG_Omnvar_GetDef(omnvarIndex);
+	uintptr_t psHost = ((uintptr_t)(g_entities + 0x150));
+	OmnvarData* data = G_Omnvar_GetData(omnvarIndex, 0, psHost);
+	const char* typeStr = BG_Omnvar_GetTypeString(ovDef);
+	int type = BG_Omnvar_GetType(ovDef);
+
+	if (type == OMNVAR_TYPE_BOOL)
+	{
+		char num = *newValue;
+		if (num == '0' || num == '1')
+		{
+			(data->current).enabled = num == '1';
+			G_Omnvar_MarkChanged(data);
+		}
+	}
+	else if (type == OMNVAR_TYPE_FLOAT)
+	{
+		float value = strToFloat(newValue);
+		(data->current).value = value;
+		G_Omnvar_MarkChanged(data);
+	}
+	else if (type == OMNVAR_TYPE_INT)
+	{
+		int value = atoi(newValue);
+		(data->current).integer = value;
+		G_Omnvar_MarkChanged(data);
+	}
+	else if (type == OMNVAR_TYPE_UINT)
+	{
+		int value = atoi(newValue);
+		if ((ovDef->maxvalue > value) && (value > ovDef->minvalue))
+		{
+			(data->current).unsignedInteger = value;
+			G_Omnvar_MarkChanged(data);
+		}
+	}
+	else if (type == OMNVAR_TYPE_TIME)
+	{
+		int value = atoi(newValue);
+		if (value < 0)
+		{
+			printf("Expected positive value for time omnvar %s\n", ovDef->name);
+			return;
+		}
+		(data->current).integer = value;
+		G_Omnvar_MarkChanged(data);
+	}
+	else if (type == OMNVAR_TYPE_NCS_LUI)
+	{
+		int ret = NetConstStrings_GetLuiStringIndex(newValue, &(data->current).ncsString);
+		if (ret == NULL)
+		{
+			printf("Invalid value '%s' for omnvar '%s'.\n", newValue, ovDef->name);
+		}
+		else
+		{
+			G_Omnvar_MarkChanged(data);
+		}
+	}
+}
+
+void Cmd_Omnvars_Dump_f()
+{
+	DumpOmnvars();
 }
 
 void Cmd_DDLDump_f() {
@@ -589,94 +1344,8 @@ void Cmd_ViewVehicleEnts_f() {
 }
 
 void Cmd_LoadoutSave_f() {
-	auto Cmd_LocalControllerIndex = reinterpret_cast<int(*)()>(0x141298040_g);
-	auto LiveStorage_GetActiveStatsSource = reinterpret_cast<int(*)(int)>(0x1412A1EB0_g);
-	auto LiveStorage_CreateDDLContext = reinterpret_cast<bool(*)(const int controllerIndex, int statsGroup, int statsSource, DDLContext * context, uintptr_t a5, void* userData)>(0x1412A13C0_g);
-	auto DDL_MoveToPath = reinterpret_cast<bool(*)(const DDLState * fromState, DDLState * toState, int depth, const char** path)>(0x1420524F0_g);
-	//auto Com_DDL_ConvertNavStringToHash = reinterpret_cast<int(*)(const char*)>(0x14129EE80_g);
-	//auto LiveStorage_InitializeDDLStateForStatsGroup = reinterpret_cast<void(*)(const DDLDef * def, DDLState * state, int statsGroup)>(0x1410CAD70_g);
-	auto Com_PlayerData_GetStatsBlob = reinterpret_cast<int(*)(int)>(0x1410CA7A0_g);
-	auto DDL_GetType = reinterpret_cast<DDLType(*)(const DDLState*)>(0x142051DD0_g);
-	auto DDL_GetString = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051CD0_g);
-	auto DDL_GetEnum = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x1420519E0_g);
-	auto DDL_GetInt = reinterpret_cast<int(*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051BF0_g);
-	auto DDL_GetRootState = reinterpret_cast<DDLState * (*)(DDLState * result, const DDLDef * ddlDef)>(0x142051C70_g);
-	auto CL_PlayerData_GetDDLBuffer = reinterpret_cast<bool(*)(DDLContext * context, int controllerIndex, int statsSource, __int32 statsGroup)>(0x1415C7940_g);
-	auto Com_DDL_LoadAsset = reinterpret_cast<const DDLDef * (*)(const char* fileName)>(0x14129F3B0_g);
-	auto Com_ParseNavStrings = reinterpret_cast<bool(*)(const char* pStr, const char** navStrings, int navStringMax, int* navStringCount)>(0x1412A02E0_g);
-	auto Com_DDL_CreateContext = reinterpret_cast<bool(*)(void* buffer, int len, const DDLDef * def, DDLContext* const ddlContext, uintptr_t a5, void* userData)>(0x14129EEC0_g);
-
-	DDLContext context;
-	DDLState state;
-	char buffer[200];
-	char* navStrings[32]{};
-	int navStringCount;
-	if (CL_PlayerData_GetDDLBuffer(&context, 0, 1, 4)) {
-		DDL_GetRootState(&state, context.def);
-		sprintf_s(buffer, "loadouts.0.name");
-		Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
-		if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings)) {
-			printf("%s\n", DDL_GetString(&state, &context));
-		}
-	}
+	SaveInventory();
 }
-
-void SaveOperatorSkins()
-{
-	auto Cmd_LocalControllerIndex = reinterpret_cast<int(*)()>(0x141298040_g);
-	auto LiveStorage_GetActiveStatsSource = reinterpret_cast<int(*)(int)>(0x1412A1EB0_g);
-	auto LiveStorage_CreateDDLContext = reinterpret_cast<bool(*)(const int controllerIndex, int statsGroup, int statsSource, DDLContext * context, uintptr_t a5, void* userData)>(0x1412A13C0_g);
-	auto DDL_MoveToPath = reinterpret_cast<bool(*)(const DDLState * fromState, DDLState * toState, int depth, const char** path)>(0x1420524F0_g);
-	//auto Com_DDL_ConvertNavStringToHash = reinterpret_cast<int(*)(const char*)>(0x14129EE80_g);
-	//auto LiveStorage_InitializeDDLStateForStatsGroup = reinterpret_cast<void(*)(const DDLDef * def, DDLState * state, int statsGroup)>(0x1410CAD70_g);
-	auto Com_PlayerData_GetStatsBlob = reinterpret_cast<int(*)(int)>(0x1410CA7A0_g);
-	auto DDL_GetType = reinterpret_cast<DDLType(*)(const DDLState*)>(0x142051DD0_g);
-	auto DDL_GetString = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051CD0_g);
-	auto DDL_GetEnum = reinterpret_cast<const char* (*)(const DDLState * state, const DDLContext * ddlContext)>(0x1420519E0_g);
-	auto DDL_GetInt = reinterpret_cast<int(*)(const DDLState * state, const DDLContext * ddlContext)>(0x142051BF0_g);
-	auto DDL_GetRootState = reinterpret_cast<DDLState * (*)(DDLState * result, const DDLDef * ddlDef)>(0x142051C70_g);
-	auto CL_PlayerData_GetDDLBuffer = reinterpret_cast<bool(*)(DDLContext * context, int controllerIndex, int statsSource, __int32 statsGroup)>(0x1415C7940_g);
-	auto Com_DDL_LoadAsset = reinterpret_cast<const DDLDef * (*)(const char* fileName)>(0x14129F3B0_g);
-	auto Com_ParseNavStrings = reinterpret_cast<bool(*)(const char* pStr, const char** navStrings, int navStringMax, int* navStringCount)>(0x1412A02E0_g);
-	auto Com_DDL_CreateContext = reinterpret_cast<bool(*)(void* buffer, int len, const DDLDef * def, DDLContext* const ddlContext, uintptr_t a5, void* userData)>(0x14129EEC0_g);
-	auto StringTable_GetColumnValueForRow = reinterpret_cast<const char* (*)(StringTable*, int, int)>(0x1413E2B40_g);
-
-	DDLContext context;
-	DDLState state;
-	char buffer[200];
-	char* navStrings[32]{};
-	int navStringCount;
-	char path[MAX_PATH + 1];
-	strcpy(path, Dvar_GetStringSafe("LOOQOTRNTN"));
-	strcat(path, "\\players\\inventory.json");
-	nlohmann::json inventoryJson;
-	if (CL_PlayerData_GetDDLBuffer(&context, 0, 1, 4)) {
-		auto operatorCsv = DB_FindXAssetHeader(ASSET_TYPE_STRINGTABLE, "operators.csv", 0).stringTable;
-		for (int i = 0; i < operatorCsv->rowCount; ++i) {
-			const char* operatorName = StringTable_GetColumnValueForRow(operatorCsv, i, 1);
-			DDL_GetRootState(&state, context.def);
-			sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.skin", operatorName);
-			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
-			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
-			{
-				inventoryJson["Operator"]["OperatorSkin"][operatorName] = DDL_GetInt(&state, &context);
-			}
-		}
-		for (int i = 0; i < 2; ++i)
-		{
-			DDL_GetRootState(&state, context.def);
-			sprintf_s(buffer, "customizationSetup.operators.%d", i);
-			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
-			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
-			{
-				inventoryJson["Operator"]["SelectedOperator"][i] = DDL_GetEnum(&state, &context);
-			}
-		}
-		std::ofstream JsonOut(path);
-		JsonOut << inventoryJson;
-	}
-}
-
 int LuaShared_LuaCall_IsDemoBuild_Detour(uintptr_t luaVM) {
 	lua_pushboolean(luaVM, 1);
 	return 1;
@@ -689,7 +1358,8 @@ dvar_t* Dvar_FindVarByName_Detour(const char* dvarName) {
 }
 
 utils::hook::detour db_findxassetheader;
-XAssetHeader DB_FindXAssetHeader_Detour(XAssetType type, const char* givenName, int allowCreateDefault) {
+XAssetHeader DB_FindXAssetHeader_Detour(XAssetType type, const char* givenName, int allowCreateDefault)
+{
 	XAssetHeader temp = db_findxassetheader.stub<XAssetHeader>(type, givenName, allowCreateDefault);
 
 	//if (type == ASSET_TYPE_XMODEL) {
@@ -707,24 +1377,6 @@ XAssetHeader DB_FindXAssetHeader_Detour(XAssetType type, const char* givenName, 
 	//	}
 	//	if (strstr(temp.model->name, "veh8_mil_air_")) {
 	//		return db_findxassetheader.stub<XAssetHeader>(type, "veh8_mil_air_acharlie130", allowCreateDefault);
-	//	}
-	//}
-
-	//if (type == ASSET_TYPE_STRINGTABLE)
-	//{
-	//	char path[MAX_PATH + 1];
-	//	memset(path, 0, MAX_PATH + 1);
-	//	snprintf(path, MAX_PATH + 1, "%s\\players\\raw\\%s", Dvar_GetStringSafe("LOOQOTRNTN"), givenName);
-	//	if (file_exists(path))
-	//	{
-	//		printf("replacing file %s\n", givenName);
-
-	//		csv::CSVFileInfo info = csv::get_file_info(path);
-	//		StringTable* table = temp.stringTable;
-	//		table->rowCount = info.n_rows;
-	//		table->columnCount = info.n_cols;
-
-	//		//table->name =
 	//	}
 	//}
 
@@ -836,7 +1488,6 @@ void DB_GetRawBuffer_Detour(const RawFile* rawfile, char* buf, int size) {
 		}
 		return;
 	}
-	printf("loading %s\n", rawfile->name);
 
 	db_getrawbuffer.stub<void>(rawfile, buf, size);
 }
@@ -865,9 +1516,40 @@ bool DDL_SetUInt_Detour(const DDLState* state, DDLContext* ddlContext, unsigned 
 	return ddl_setuint.stub<bool>(state, ddlContext, val);
 }
 
-void SV_CmdsMP_FastRestart_f() {
-	auto SV_CmdsMP_RequestMapRestart = reinterpret_cast<void(*)(bool loadScripts, bool migrate)>(0x14136C310_g);
-	SV_CmdsMP_RequestMapRestart(1, 0);
+utils::hook::detour com_gamemode_supportsfeature;
+bool Com_GameMode_SupportsFeature_Detour(unsigned int featureID)
+{
+	if (featureID == 70) // TIMESCALE_TWEAKING
+	{
+		return true;
+	}
+
+	if (featureID == 33) // GRAVITY_CHANGE_ALLOWED
+	{
+		return true;
+	}
+
+	return com_gamemode_supportsfeature.stub<bool>(featureID);
+}
+
+utils::hook::detour sv_updateuserinfo_detour;
+void SV_UpdateUserinfo_f(unsigned char* cl)
+{
+	auto SV_Cmd_Argv = reinterpret_cast<char* (*)(int)>(0x141298B10_g);
+	auto Info_ValueForKey = reinterpret_cast<char* (*)(const char*, const char*)>(0x1413F2A10_g);
+	// more checks can be added here (it's patched in current mw19, vanguard, and mwii, could probably find the actual fix there)
+	if (!strlen(Info_ValueForKey(SV_Cmd_Argv(1), "platform")))
+	{
+		return;
+	}
+	sv_updateuserinfo_detour.stub<void>(cl);
+}
+
+utils::hook::detour lui_cod_luacall_getblueprintdata_impl;
+int LUI_CoD_LuaCall_GetBlueprintData_impl_Detour(uintptr_t luaState)
+{
+	SaveInventory();
+	return 0;
 }
 
 void* exception_handler_handle;
@@ -895,21 +1577,24 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 
 		//sub_141BD3360.create(0x141BD3360_g, sub_141BD3360_Detour);
 
-		utils::hook::copy(0x1530AD525_g, data_buf, 0x12856B); // Splash screen data
+		// utils::hook::copy(0x1530AD525_g, data_buf, 0x12856B); // Splash screen data
 
 		Cmd_AddCommandInternal("set_byte", set_byte_f, &set_byte_f_VAR);
 		Cmd_AddCommandInternal("set_short", set_short_f, &set_short_f_VAR);
 		Cmd_AddCommandInternal("set_int", set_int_f, &set_int_f_VAR);
+		Cmd_AddCommandInternal("set_float", set_float_f, &set_float_f_VAR);
 		Cmd_AddCommandInternal("set_pointer", set_pointer_f, &set_pointer_f_VAR);
 		Cmd_AddCommandInternal("quit", Cmd_Quit_f, &quit_f_VAR);
 		Cmd_AddCommandInternal("openmenu", Cmd_OpenMenu_f, &openmenu_f_VAR);
-		//Cmd_AddCommandInternal("addbot", Cmd_AddBot_f, &addbot_f_VAR);
+		Cmd_AddCommandInternal("addbot", Cmd_AddBot_f, &addbot_f_VAR);
 		Cmd_AddCommandInternal("ddldump", Cmd_DDLDump_f, &ddldump_f_VAR);
 		Cmd_AddCommandInternal("weapondefdump", Cmd_WeaponDefDump_f, &weapondefdump_f_VAR);
 		//Cmd_AddCommandInternal("view_vehicle_ents", Cmd_ViewVehicleEnts_f, &view_vehicle_ents_f_VAR);
-		//Cmd_AddCommandInternal("loadout_save", Cmd_LoadoutSave_f, &loadout_save_f_VAR);
-		Cmd_AddCommandInternal("loadout_save", SaveOperatorSkins, &loadout_save_f_VAR);
+		// Cmd_AddCommandInternal("save_inventory", Cmd_LoadoutSave_f, &loadout_save_f_VAR);
+		Cmd_AddCommandInternal("map_restart", SV_CmdsMP_MapRestart_f, &MapRestart_f_VAR);
 		Cmd_AddCommandInternal("fast_restart", SV_CmdsMP_FastRestart_f, &FastRestart_f_VAR);
+		Cmd_AddCommandInternal("setOmnvar", Cmd_Omnvar_Set_f, &omnvar_set_f_VAR);
+		// Cmd_AddCommandInternal("dumpomnvars", Cmd_Omnvars_Dump_f, &omnvar_dump_f_VAR);
 
 		// patch ui_maxclients limit
 		utils::hook::nop(0x140F30210_g, 5);
@@ -931,8 +1616,9 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		utils::hook::nop(0x14119F13A_g, 5);
 		utils::hook::nop(0x1410D32E2_g, 5);
 
-		// Fix crash exploit
-		utils::hook::nop(0x14136D0EA_g, 5);
+		// patch userinfo crash exploit
+		// utils::hook::nop(0x14136D0EA_g, 5);
+		sv_updateuserinfo_detour.create(0x14136d0c0_g, SV_UpdateUserinfo_f);
 
 		db_findxassetheader.create(0x1411AA890_g, DB_FindXAssetHeader_Detour);
 		db_getrawbufferinflate.create(0x1412C2AE0_g, DB_GetRawBufferInflate_Detour);
@@ -949,7 +1635,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		utils::hook::jump(0x141528490_g, Live_IsUserSignedInToDemonware_Detour);
 		utils::hook::jump(0x1417EC930_g, dwGetLogOnStatus_Detour);
 		utils::hook::jump(0x1412A1EB0_g, LiveStorage_GetActiveStatsSource_Detour);
-		//utils::hook::jump(0x1419B96A0_g, LuaShared_LuaCall_IsDemoBuild_Detour);
+		utils::hook::jump(0x1419B96A0_g, LuaShared_LuaCall_IsDemoBuild_Detour);
 
 		dvar_findvarbyname.create(0x1413E63A0_g, Dvar_FindVarByName_Detour);
 
@@ -966,9 +1652,29 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		cl_createdevgui.create(0x1415B2080_g, CL_CreateDevGui_Detour);
 		partyhost_startprivateparty.create(0x14119F0D0_g, PartyHost_StartPrivateParty_Detour);
 
-		PM_WeaponUseAmmo.create(0x141155AF0_g, PM_WeaponUseAmmo_Detour); //TODO: add sv_cheat validation
+		PM_WeaponUseAmmo.create(0x141155AF0_g, PM_WeaponUseAmmo_Detour);
+
+		com_gamemode_supportsfeature.create(0x1410C8980_g, Com_GameMode_SupportsFeature_Detour);
+
+		lui_cod_luacall_getblueprintdata_impl.create(0x140F58A00_g, LUI_CoD_LuaCall_GetBlueprintData_impl_Detour);
 
 		clientUIActives = (clientUIActive_t*)(0x14EEF1280_g);
+
+		// removes "Services aren't ready yet." print
+		utils::hook::nop(0x141504374_g, 5);
+
+		// enable tweaking of jump_slowdownEnable dvar
+		utils::hook::nop(0x1411014F5_g, 2);
+		utils::hook::nop(0x141101B12_g, 2);
+		utils::hook::nop(0x141101C6C_g, 2);
+		utils::hook::nop(0x141101D3C_g, 2);
+		utils::hook::nop(0x141101EE5_g, 2);
+
+		// fixes lost connection issue?
+		utils::hook::nop(0x14165E97E_g, 5);
+		utils::hook::nop(0x14165E660_g, 5);
+		utils::hook::nop(0x141665289_g, 5);
+		utils::hook::nop(0x14166567D_g, 5);
 	}
 
 	return TRUE;

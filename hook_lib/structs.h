@@ -1019,14 +1019,7 @@ struct gentity_s : class_helper {
 	unsigned __int8 field_19A;
 	unsigned __int8 field_19B;
 	int spawnflags;
-	unsigned __int8 field_1A0;
-	unsigned __int8 field_1A1;
-	unsigned __int8 field_1A2;
-	unsigned __int8 field_1A3;
-	unsigned __int8 field_1A4;
-	unsigned __int8 field_1A5;
-	unsigned __int8 field_1A6;
-	unsigned __int8 field_1A7;
+	unsigned int m_flags[2];
 	unsigned __int8 field_1A8;
 	unsigned __int8 field_1A9;
 	unsigned __int8 field_1AA;
@@ -2035,6 +2028,63 @@ struct gentity_s : class_helper {
 	unsigned __int8 field_59F;
 };
 
+typedef enum StatsSource {
+	STATS_ONLINE = 0,
+	STATS_OFFLINE = 1,
+	STATS_COUNT = 2
+} StatsSource;
+
+typedef enum StatsGroup {
+	STATSGROUP_FIRST = 0,
+	STATSGROUP_RANKED = 0,
+	STATSGROUP_COOP = 1,
+	STATSGROUP_COMMON = 2,
+	STATSGROUP_RANKEDLOADOUTS = 3,
+	STATSGROUP_PRIVATELOADOUTS = 4,
+	STATSGROUP_NONGAME = 5,
+	STATSGROUP_COUNT = 6,
+	STATSGROUP_IGNORE = 7
+} StatsGroup;
+
+typedef enum OmnvarType 
+{
+	OMNVAR_TYPE_BOOL = 0,
+	OMNVAR_TYPE_FLOAT = 1,
+	OMNVAR_TYPE_INT = 2,
+	OMNVAR_TYPE_UINT = 3,
+	OMNVAR_TYPE_TIME = 4,
+	OMNVAR_TYPE_NCS_LUI = 5,
+	OMNVAR_TYPE_COUNT = 6
+} OmnvarType;
+
+union OmnvarValue
+{
+	bool enabled;
+	int integer;
+	unsigned int unsignedInteger;
+	float value;
+	unsigned int ncsString;
+};
+
+struct OmnvarData
+{
+	unsigned int timeModified;
+	OmnvarValue current;
+};
+
+struct __declspec(align(8)) OmnvarDef
+{
+	const char* name;
+	const char* ncsString;
+	int pmoveIndex;
+	int minvalue;
+	int maxvalue;
+	OmnvarValue initial;
+	char numbits;
+	char flags;
+	byte type[1];
+	byte userType[1];
+};
 
 
 struct scrContext_t :class_helper {

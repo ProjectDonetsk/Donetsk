@@ -117,6 +117,7 @@ extern dvar_t* player_sustainammo;
 extern cmd_function_s set_byte_f_VAR;
 extern cmd_function_s set_short_f_VAR;
 extern cmd_function_s set_int_f_VAR;
+extern cmd_function_s set_float_f_VAR;
 extern cmd_function_s set_pointer_f_VAR;
 extern cmd_function_s quit_f_VAR;
 extern cmd_function_s openmenu_f_VAR;
@@ -126,6 +127,9 @@ extern cmd_function_s weapondefdump_f_VAR;
 extern cmd_function_s view_vehicle_ents_f_VAR;
 extern cmd_function_s loadout_save_f_VAR;
 extern cmd_function_s FastRestart_f_VAR;
+extern cmd_function_s MapRestart_f_VAR;
+extern cmd_function_s omnvar_set_f_VAR;
+extern cmd_function_s omnvar_dump_f_VAR;
 extern CmdArgs* cmd_args;
 
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler);
@@ -150,6 +154,8 @@ inline bool file_exists(const char* name) {
 
 uintptr_t FS_ReadFile(const char* qpath, const char** buffer);
 const char* Dvar_GetStringSafe(const char* dvar);
+bool Dvar_GetBoolSafe(const char* dvar);
+int Dvar_GetIntSafe(const char* dvar);
 
 unsigned int* GetRandSeed();
 unsigned __int64 Sys_Microseconds();
@@ -189,6 +195,8 @@ bool CheatsOk(int entNum);
 
 void Cmd_Noclip_f(int entNum);
 
+void Cmd_God_f(int entNum);
+
 void SV_Cmd_ArgvBuffer(int arg, char* buffer, unsigned __int64 bufferLength);
 void Cmd_ArgvBuffer(int arg, char* buffer, int bufferLength);
 int Cmd_Argc();
@@ -218,6 +226,8 @@ scrContext_t* ScriptContext_Server();
 const char* SL_ConvertToString(int id);
 
 union XAssetHeader DB_FindXAssetHeader(enum XAssetType type, const char* givenName, int allowCreateDefault);
+
+void Com_SetErrorMessage(const char* errorMessage);
 
 #pragma endregion
 

@@ -10,6 +10,6 @@ size_t operator"" _g(size_t val);
 size_t reverse_g(size_t val);
 size_t reverse_g(const void* val);
 
-extern byte data_buf[0x12856B];
+extern byte data_buf[1];
 
 void set_splashscreen();
