@@ -45,6 +45,18 @@ const char* Dvar_GetStringSafe(const char* dvar) {
 	return func(dvar);
 }
 
+bool Dvar_GetBoolSafe(const char* dvar)
+{
+	auto func = reinterpret_cast<bool(*)(const char*)>(0x1413E6820_g);
+	return func(dvar);
+}
+
+int Dvar_GetIntSafe(const char* dvar)
+{
+	auto func = reinterpret_cast<int(*)(const char* path)>(0x1413E6960_g);
+	return func(dvar);
+}
+
 unsigned int* GetRandSeed() {
 	auto func = reinterpret_cast<unsigned int* (*)()>(0x1413DD630_g);
 	return func();
@@ -242,6 +254,12 @@ void Cmd_Noclip_f(int entNum)
 	}
 }
 
+void Cmd_God_f(int entNum)
+{
+	SvClient* ms_clients = *reinterpret_cast<SvClient**>(0x14E17F690_g + (8 * entNum));
+	gentity_s ent = g_entities[entNum];
+}
+
 void SV_Cmd_ArgvBuffer(int arg, char* buffer, unsigned __int64 bufferLength) {
 	auto func = reinterpret_cast<void(*)(int, char*, unsigned __int64)>(0x141298B40_g);
 	func(arg, buffer, bufferLength);
@@ -353,6 +371,11 @@ XAssetHeader DB_FindXAssetHeader(XAssetType type, const char* givenName, int all
 	return func(type, givenName, allowCreateDefault);
 }
 
+void Com_SetErrorMessage(const char* errorMessage) {
+    auto func = reinterpret_cast<void(*)(const char*)>(0x1412B3710_g);
+    return func(errorMessage);
+}
+
 #pragma endregion
 
 dvar_t* player_name;
@@ -364,6 +387,7 @@ dvar_t* player_sustainammo;
 cmd_function_s set_byte_f_VAR;
 cmd_function_s set_short_f_VAR;
 cmd_function_s set_int_f_VAR;
+cmd_function_s set_float_f_VAR;
 cmd_function_s set_pointer_f_VAR;
 cmd_function_s quit_f_VAR;
 cmd_function_s openmenu_f_VAR;
@@ -373,6 +397,9 @@ cmd_function_s weapondefdump_f_VAR;
 cmd_function_s view_vehicle_ents_f_VAR;
 cmd_function_s loadout_save_f_VAR;
 cmd_function_s FastRestart_f_VAR;
+cmd_function_s MapRestart_f_VAR;
+cmd_function_s omnvar_set_f_VAR;
+cmd_function_s omnvar_dump_f_VAR;
 
 CmdArgs* cmd_args;
 
