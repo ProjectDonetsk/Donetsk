@@ -1552,6 +1552,59 @@ int LUI_CoD_LuaCall_GetBlueprintData_impl_Detour(uintptr_t luaState)
 	return 0;
 }
 
+utils::hook::detour process_script_file;
+void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
+{
+	if (scriptfile)
+	{
+		printf("loading gsc: %s\n", scriptfile->name);
+
+		if (!strcmp(scriptfile->name, "1816")) // 1816 = art.gsc, main gets called in load.gsc
+		{
+			std::ifstream script;
+			script.open("script.gscbin", std::ios::binary | std::ios::ate);
+
+			int size = (int)script.tellg();
+			script.seekg(0, std::ios::beg);
+
+			if (script.fail())
+			{
+				printf("Couldn't find file to inject");
+				process_script_file.stub<void>(scrContext, scriptfile);
+				return;
+			}
+
+			auto PMem_AllocFromLoan = reinterpret_cast<void* (*)(size_t size, size_t alignment, int pool, int stack, const char* hint)>(0x140F134D0_g);
+
+			char* allocMemAddress = (char*)PMem_AllocFromLoan(size, 4, 0, 0, nullptr);
+
+			script.read(allocMemAddress, size);
+			script.seekg(0, std::ios::beg);
+
+			while (script.get() != '\0') //read past the name
+			{
+			}
+
+			int vars[3] = { 0 };
+			script.read((char*)vars, sizeof(int) * 3); //read header info
+
+			printf("vars[0] %X\n", vars[0]);
+			printf("vars[1] %X\n", vars[1]);
+			printf("vars[2] %X\n", vars[2]);
+			printf("buffer 0x%llX\n", allocMemAddress + (int)script.tellg());
+			printf("bytecode 0x%llX\n", allocMemAddress + vars[0] + script.tellg());
+
+			scriptfile->compressedLen = vars[0];
+			scriptfile->len = vars[1];
+			scriptfile->bytecodeLen = vars[2];
+			scriptfile->buffer = allocMemAddress + (int)script.tellg();
+			// scriptfile->bytecode = (unsigned char*)(allocMemAddress + vars[0] + (int)script.tellg());
+			memcpy(scriptfile->bytecode, allocMemAddress + vars[0] + (int)script.tellg(), vars[2]);
+		}
+	}
+	process_script_file.stub<void>(scrContext, scriptfile);
+}
+
 void* exception_handler_handle;
 BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 	g_Addrs.ModuleBase = (uintptr_t)(GetModuleHandle(0));
@@ -1659,6 +1712,9 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		lui_cod_luacall_getblueprintdata_impl.create(0x140F58A00_g, LUI_CoD_LuaCall_GetBlueprintData_impl_Detour);
 
 		clientUIActives = (clientUIActive_t*)(0x14EEF1280_g);
+
+		printf("hookng script file\n");
+		process_script_file.create(0x141322350_g, ProcessScriptFile);
 
 		// removes "Services aren't ready yet." print
 		utils::hook::nop(0x141504374_g, 5);
