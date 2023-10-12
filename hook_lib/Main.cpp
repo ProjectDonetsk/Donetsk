@@ -1551,16 +1551,16 @@ int LUI_CoD_LuaCall_GetBlueprintData_impl_Detour(uintptr_t luaState)
 	SaveInventory();
 	return 0;
 }
-
 utils::hook::detour process_script_file;
 void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 {
+
 	if (scriptfile)
 	{
 		printf("loading gsc: %s\n", scriptfile->name);
-
-		if (!strcmp(scriptfile->name, "1816")) // 1816 = art.gsc, main gets called in load.gsc
+		if (!strcmp(scriptfile->name, "1892"))
 		{
+			printf("WAR GSC ASSET - %llX\nGSC - BYTECODE %llx\n", scriptfile, scriptfile->bytecode);
 			std::ifstream script;
 			script.open("script.gscbin", std::ios::binary | std::ios::ate);
 
@@ -1574,9 +1574,9 @@ void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 				return;
 			}
 
-			auto PMem_AllocFromLoan = reinterpret_cast<void* (*)(size_t size, size_t alignment, int pool, int stack, const char* hint)>(0x140F134D0_g);
+			auto Load_scriptFileAsset = reinterpret_cast<void* (*)(size_t size, size_t alignment, int pool, int stack, const char* hint)>(0x140F134D0_g);
 
-			char* allocMemAddress = (char*)PMem_AllocFromLoan(size, 4, 0, 0, nullptr);
+			char* allocMemAddress = (char*)Load_scriptFileAsset(size, 4, 0, 0, nullptr);
 
 			script.read(allocMemAddress, size);
 			script.seekg(0, std::ios::beg);
@@ -1598,13 +1598,12 @@ void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 			scriptfile->len = vars[1];
 			scriptfile->bytecodeLen = vars[2];
 			scriptfile->buffer = allocMemAddress + (int)script.tellg();
-			// scriptfile->bytecode = (unsigned char*)(allocMemAddress + vars[0] + (int)script.tellg());
+			//scriptfile->bytecode = (unsigned char*)(allocMemAddress + vars[0] + (int)script.tellg());
 			memcpy(scriptfile->bytecode, allocMemAddress + vars[0] + (int)script.tellg(), vars[2]);
 		}
 	}
 	process_script_file.stub<void>(scrContext, scriptfile);
 }
-
 void* exception_handler_handle;
 BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 	g_Addrs.ModuleBase = (uintptr_t)(GetModuleHandle(0));
@@ -1625,7 +1624,9 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		nlog("Base Address: %p\n", base);
 
 		cmd_args = (CmdArgs*)(0x14D20CBD0_g);
+		printf("hookng script file\n");
 
+		process_script_file.create(0x141322350_g, ProcessScriptFile);
 		//utils::hook::jump(0x141BD3360_g, sub_141BD3360_Detour);
 
 		//sub_141BD3360.create(0x141BD3360_g, sub_141BD3360_Detour);
@@ -1712,9 +1713,6 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid) {
 		lui_cod_luacall_getblueprintdata_impl.create(0x140F58A00_g, LUI_CoD_LuaCall_GetBlueprintData_impl_Detour);
 
 		clientUIActives = (clientUIActive_t*)(0x14EEF1280_g);
-
-		printf("hookng script file\n");
-		process_script_file.create(0x141322350_g, ProcessScriptFile);
 
 		// removes "Services aren't ready yet." print
 		utils::hook::nop(0x141504374_g, 5);
