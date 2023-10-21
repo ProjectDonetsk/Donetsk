@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "auto" # See documentation for possible values
+  - package-ecosystem: "cpp" # See documentation for possible values
     default-branch: "main"
     directory: "/" # Location of package manifests
     schedule:
