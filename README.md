@@ -24,6 +24,5 @@ NOTE: You must legally own Call of Duty®: Modern Warfare (2019) to play Donetsk
 # Common Errors
 - ```Failed to initialize TACT client: E_STORAGE_INIT (25), Invalid build info ```
   - Right click on game folder and uncheck read only
-
 - ```Fatal Error (Of any variety)```
   - Right click on game folder and uncheck read only
