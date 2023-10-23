@@ -22,7 +22,5 @@ NOTE: You must legally own Call of Duty®: Modern Warfare (2019) to play Donetsk
 3. Put the dll into the game folder and launch game_dx12_ship_replay.exe
 ---
 # Common Errors
-```
-Failed to initialize TACT client: E_STORAGE_INIT (25), Invalid build info
-```
+- ```Failed to initialize TACT client: E_STORAGE_INIT (25), Invalid build info ```
   - See --skip-launcher-update
