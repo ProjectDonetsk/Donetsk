@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="/github/assets/donetskbanner.png?raw=true" />
+</p>
+
 # What is project Donetsk?
 Project Donetsk is an attempt to create a more open Modern Warfare 2019 with a server browser, GSC, and a modder friendly environment
 ---
