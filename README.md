@@ -1,3 +1,5 @@
+[![Discord](https://img.shields.io/discord/945420505157083208?color=%237289DA&label=members&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/EtnkMkESQv)
+
 <p align="center">
   <img src="/github/assets/donetskbanner.png?raw=true" />
 </p>
