@@ -14,15 +14,14 @@
 
 #include "common/utils/hook.hpp"
 #include "common/utils/hardware_breakpoint.hpp"
-#include "functions.hpp"
+
 #include "structs.h"
 #include "assets.h"
+#include "functions.hpp"
 
 #include "ini.h"
 #include "json.hpp"
 #include "splashscreen.hpp"
-
-extern void* exception_handler;
 
 #define base g_Addrs.ModuleBase
 
@@ -43,7 +42,6 @@ struct menu_variables {
 };
 extern menu_variables vars;
 
-void nlog(const char* str, ...);
 uintptr_t find_pattern(const char* module_name, const char* pattern);
 uintptr_t find_pattern(uintptr_t start, const char* module_name, const char* pattern);
 
@@ -54,9 +52,6 @@ size_t reverse_b(const void* val);
 size_t operator"" _g(size_t val);
 size_t reverse_g(size_t val);
 size_t reverse_g(const void* val);
-
-void log(const char* str);
-void log(const char* file, const char* str);
 
 struct DvarPair
 {

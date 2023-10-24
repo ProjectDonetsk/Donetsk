@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common\exception\minidump.cpp" />
     <ClCompile Include="common\utils\binary_resource.cpp" />
     <ClCompile Include="common\utils\hardware_breakpoint.cpp" />
@@ -161,14 +162,35 @@
     <ClCompile Include="common\utils\smbios.cpp" />
     <ClCompile Include="common\utils\string.cpp" />
     <ClCompile Include="common\utils\thread.cpp" />
+    <ClCompile Include="ddl.cpp" />
+    <ClCompile Include="devgui.cpp" />
+    <ClCompile Include="dvar.cpp" />
+    <ClCompile Include="fastfile.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="assets.cpp" />
+    <ClCompile Include="gamemode.cpp" />
+    <ClCompile Include="g_cmds.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="inventory.cpp" />
+    <ClCompile Include="lui_cod.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="net_chan.cpp" />
+    <ClCompile Include="omnvars.cpp" />
+    <ClCompile Include="party.cpp" />
+    <ClCompile Include="patch.cpp" />
+    <ClCompile Include="screen.cpp" />
+    <ClCompile Include="script.cpp" />
     <ClCompile Include="splashscreen.cpp" />
+    <ClCompile Include="stringed.cpp" />
     <ClCompile Include="structs.cpp" />
+    <ClCompile Include="sv_main.cpp" />
+    <ClCompile Include="transients.cpp" />
+    <ClCompile Include="weapons.cpp" />
+    <ClCompile Include="zones.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assets.h" />
+    <ClInclude Include="cmd.h" />
     <ClInclude Include="common\exception\minidump.hpp" />
     <ClInclude Include="common\utils\binary_resource.hpp" />
     <ClInclude Include="common\utils\concurrency.hpp" />
@@ -183,12 +205,33 @@
     <ClInclude Include="common\utils\smbios.hpp" />
     <ClInclude Include="common\utils\string.hpp" />
     <ClInclude Include="common\utils\thread.hpp" />
+    <ClInclude Include="ddl.h" />
+    <ClInclude Include="devgui.h" />
+    <ClInclude Include="dvar.h" />
+    <ClInclude Include="fastfile.h" />
     <ClInclude Include="functions.hpp" />
+    <ClInclude Include="gamemode.h" />
+    <ClInclude Include="game_inc.h" />
+    <ClInclude Include="g_cmds.h" />
     <ClInclude Include="ini.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="inventory.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="lui_cod.h" />
     <ClInclude Include="Main.hpp" />
     <ClInclude Include="MinHook.hpp" />
+    <ClInclude Include="net_chan.h" />
+    <ClInclude Include="omnvars.h" />
+    <ClInclude Include="party.h" />
+    <ClInclude Include="patch.h" />
+    <ClInclude Include="screen.h" />
+    <ClInclude Include="script.h" />
+    <ClInclude Include="stringed.h" />
     <ClInclude Include="structs.h" />
+    <ClInclude Include="sv_main.h" />
+    <ClInclude Include="transients.h" />
+    <ClInclude Include="weapons.h" />
+    <ClInclude Include="zones.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

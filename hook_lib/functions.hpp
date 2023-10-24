@@ -135,6 +135,9 @@ extern CmdArgs* cmd_args;
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler);
 NTSTATUS NtContinue(PCONTEXT threadContext, BOOLEAN raiseAlert);
 
+bool isSubStr(std::string str, std::string subStr);
+float strToFloat(const std::string& str);
+
 #pragma region //game functions
 
 extern const char* (*va)(const char* fmt, ...);
@@ -228,6 +231,20 @@ const char* SL_ConvertToString(int id);
 union XAssetHeader DB_FindXAssetHeader(enum XAssetType type, const char* givenName, int allowCreateDefault);
 
 void Com_SetErrorMessage(const char* errorMessage);
+
+void GamerProfile_SetDataByName(unsigned int controllerIndex, const char* settingName, float settingValue);
+
+short* SV_ClientMP_AddTestClient();
+
+void GScr_AddEntity(short* entity);
+
+void SV_ClientMP_SpawnBotOrTestClient(short* entity);
+
+uintptr_t G_GetEntityPlayerState(gentity_s* ent);
+
+int G_Main_GetTime();
+
+const char* _va(const char* format, ...);
 
 #pragma endregion
 
