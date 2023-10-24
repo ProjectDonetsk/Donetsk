@@ -11,6 +11,67 @@ NTSTATUS NtContinue(PCONTEXT threadContext, BOOLEAN raiseAlert) {
 	return ntdll.invoke<NTSTATUS>("NtContinue", threadContext, raiseAlert);
 }
 
+bool isSubStr(std::string str, std::string subStr)
+{
+	size_t pos = str.find(subStr);
+	if (pos != std::string::npos)
+	{
+		return true;
+	}
+	return false;
+}
+
+float strToFloat(const std::string& str)
+{
+	float num = 0.0f;
+	float fraction = 0.1f;
+	bool isNegative = false;
+
+	size_t i = 0;
+	if (str[i] == '-')
+	{
+		isNegative = true;
+		i++;
+	}
+
+	for (; i < str.length(); i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			num = num * 10.0f + static_cast<float>(str[i] - '0');
+		}
+		else if (str[i] == '.')
+		{
+			i++;
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	for (; i < str.length(); i++)
+	{
+		if (str[i] >= '0' && str[i] <= '9')
+		{
+			num += (str[i] - '0') * fraction;
+			fraction *= 0.1f;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if (isNegative)
+	{
+		num = -num;
+	}
+
+	return num;
+}
+
 #pragma region //game functions
 
 const char* (*va)(const char* fmt, ...);
@@ -374,6 +435,56 @@ XAssetHeader DB_FindXAssetHeader(XAssetType type, const char* givenName, int all
 void Com_SetErrorMessage(const char* errorMessage) {
     auto func = reinterpret_cast<void(*)(const char*)>(0x1412B3710_g);
     return func(errorMessage);
+}
+
+void GamerProfile_SetDataByName(unsigned int controllerIndex, const char* settingName, float settingValue)
+{
+	auto func = reinterpret_cast<void(*)(int, const char*, float)>(0x1415D8BD0_g);
+	return func(controllerIndex, settingName, settingValue);
+}
+
+short* SV_ClientMP_AddTestClient()
+{
+	uintptr_t SV_ClientMP_AddTestClient_func_address = 0x14136e570_g;
+	short* (__cdecl * SV_ClientMP_AddTestClient_func)(void) = (short* (__cdecl*)(void))SV_ClientMP_AddTestClient_func_address;
+
+	return SV_ClientMP_AddTestClient_func();
+}
+
+void GScr_AddEntity(short* entity)
+{
+	auto GScr_AddEntity_func = reinterpret_cast<void(*)(short* ent)>(0x1412578a0_g);
+	GScr_AddEntity_func(entity);
+}
+
+void SV_ClientMP_SpawnBotOrTestClient(short* entity)
+{
+	auto SV_ClientMP_SpawnBotOrTestClient_func = reinterpret_cast<void(*)(short* ent)>(0x141373640_g);
+	SV_ClientMP_SpawnBotOrTestClient_func(entity);
+}
+
+uintptr_t G_GetEntityPlayerState(gentity_s* ent)
+{
+	uintptr_t cl = ent->client;
+
+	// return &cl->ps;
+	return cl; // client + 0x0 = playerstate
+}
+
+int G_Main_GetTime()
+{
+	return *(int*)0x14BC21730;
+}
+
+const char* _va(const char* format, ...)
+{
+	char _buf[2048];
+	va_list ap;
+
+	va_start(ap, format);
+	vsnprintf(_buf, 2048, format, ap);
+	_buf[2047] = 0;
+	return _buf;
 }
 
 #pragma endregion
