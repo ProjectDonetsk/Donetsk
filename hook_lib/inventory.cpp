@@ -52,6 +52,14 @@ void SaveInventory()
 					{
 						inventoryJson["Operator"]["OperatorExecution"][ddlDef->enumList[i].members[j]] = DDL_GetInt(&state, &context);
 					}
+					// voice lines
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.taunt", ddlDef->enumList[i].members[j]);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						inventoryJson["Operator"]["OperatorTaunt"][ddlDef->enumList[i].members[j]] = DDL_GetInt(&state, &context);
+					}
 				}
 			}
 		}
@@ -82,9 +90,43 @@ void SaveInventory()
 		{
 			inventoryJson["Operator"]["OperatorWatch"] = DDL_GetInt(&state, &context);
 		}
+		// gesture wheel
+		for (int i = 0; i < 8; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "customizationSetup.radial.%d", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["GesturesAndSprays"][i] = { {"GesturesAndSpraysName", DDL_GetInt(&state, &context)} };
+			}
+		}
 		// end of operator customization related
-		// start of weapon customization
 
+		// killstreak data
+		for (int i = 0; i < 3; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "squadMembers.killstreakSetups.%d.killstreak", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["killstreak"][i] = { {"killstreakName", DDL_GetEnum(&state, &context)} };
+			}
+		}
+		// field upgrades data
+		for (int i = 0; i < 2; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "squadMembers.fieldUpgrades.%d", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["fieldUpgrades"][i] = { {"fieldUpgradesName", DDL_GetEnum(&state, &context)} };
+			}
+		}
+
+		// start of weapon customization
 		for (int i = 0; i < 10; ++i) {
 			// get weapon
 			DDL_GetRootState(&state, ddlDef);
@@ -94,6 +136,28 @@ void SaveInventory()
 			{
 				// test by getting loadout names
 				inventoryJson["Loadouts"][i] = { {"name", DDL_GetString(&state, &context)} };
+			}
+			// loadoutPerks
+			for (int b = 0; b < 3; ++b)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.loadoutPerks.%d", i, b);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["loadoutPerks"][b] = { {"loadoutPerksName", DDL_GetEnum(&state, &context)} };
+				}
+			}
+			// equipment
+			for (int a = 0; a < 2; ++a)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.equipmentSetups.%d.equipment", i, a);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["equipmentSetups"][a] = { {"equipmentName", DDL_GetEnum(&state, &context)} };
+				}
 			}
 			for (int j = 0; j < 2; ++j) {
 				// get camos
@@ -146,13 +210,68 @@ void SaveInventory()
 						inventoryJson["Loadouts"][i]["weaponSetup"][j]["attachments"][k] = { attachmentName.c_str(), DDL_GetInt(&state, &context) };
 					}
 				}
+				// get sticker data
+				for (int k = 0; k < 4; ++k) {
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.sticker.%d", i, j, k);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						inventoryJson["Loadouts"][i]["weaponSetup"][j]["Sticker"][k] = { {"StickerName", DDL_GetEnum(&state, &context)} };
+					}
+				}
+				// get reticle customization
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.reticle", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j].push_back({ "reticleName", DDL_GetEnum(&state, &context) });
+				}
+				// get charm data
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.cosmeticAttachment", i, j);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					inventoryJson["Loadouts"][i]["weaponSetup"][j].push_back({ "cosmeticAttachmentName", DDL_GetEnum(&state, &context) });
+				}
 			}
-
 		}
 		// printf("Saved Inventory!\n");
 	}
 	else {
-		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer, called before initialized?");
+		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_PRIVATELOADOUTS, called before initialized?");
+	}
+
+	if (CL_PlayerData_GetDDLBuffer(&context, 0, STATS_OFFLINE, STATSGROUP_NONGAME))
+	{
+		ddlDef = (DDLDef*)context.def;
+		for (int i = 0; i < 2; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "nonGameData.customization_patch.%d", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["customizationPatch"][i] = { {"customizationPatchName", DDL_GetInt(&state, &context)} };
+
+			}
+		}
+		for (int i = 0; i < 2; ++i)
+		{
+			DDL_GetRootState(&state, ddlDef);
+			sprintf_s(buffer, "nonGameData.customization_background.%d", i);
+			Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+			if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+			{
+				inventoryJson["customizationBackground"][i] = { {"customizationBackgroundName", DDL_GetInt(&state, &context)} };
+			}
+		}
+		// printf("Saved Customizations!\n");
+	}
+	else {
+		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_NONGAME, called before initialized?");
 	}
 
 	std::ofstream JsonOut(path);
@@ -197,11 +316,13 @@ void LoadInventory()
 		nlohmann::json inventoryJson = nlohmann::json::parse(jsonPath);
 		if (CL_PlayerData_GetDDLBuffer(&context, 0, STATS_OFFLINE, STATSGROUP_PRIVATELOADOUTS)) {
 			ddlDef = (DDLDef*)context.def;
+			// start of operator customization related
 			for (int i = 0; i < ddlDef->enumCount; ++i)
 			{
 				if (!strcmp(ddlDef->enumList[i].name, "Operator")) {
 					for (int j = 0; j < ddlDef->enumList[i].memberCount; ++j)
 					{
+						// operator skins
 						DDL_GetRootState(&state, ddlDef);
 						sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.skin", ddlDef->enumList[i].members[j]);
 						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
@@ -218,9 +339,18 @@ void LoadInventory()
 							DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorExecution"][ddlDef->enumList[i].members[j]]);
 						}
 
+						// voice lines
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "customizationSetup.operatorCustomization.%s.taunt", ddlDef->enumList[i].members[j]);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorTaunt"][ddlDef->enumList[i].members[j]]);
+						}
 					}
 				}
 			}
+			// selected operator
 			for (int i = 0; i < 2; ++i)
 			{
 				DDL_GetRootState(&state, ddlDef);
@@ -248,6 +378,43 @@ void LoadInventory()
 			{
 				DDL_SetInt(&state, &context, inventoryJson["Operator"]["OperatorWatch"]);
 			}
+			// gesture wheel
+			for (int i = 0; i < 8; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "customizationSetup.radial.%d", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetInt(&state, &context, inventoryJson["GesturesAndSprays"][i]["GesturesAndSpraysName"]);
+
+				}
+			}
+			// end of operator customization related
+
+			// killstreak data
+			for (int i = 0; i < 3; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.killstreakSetups.%d.killstreak", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetEnum(&state, &context, inventoryJson["killstreak"][i]["killstreakName"].get<std::string>().c_str());
+				}
+			}
+			// field upgrades data
+			for (int i = 0; i < 2; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "squadMembers.fieldUpgrades.%d", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetEnum(&state, &context, inventoryJson["fieldUpgrades"][i]["fieldUpgradesName"].get<std::string>().c_str());
+				}
+			}
+
 			// start of weapon customization
 			for (int i = 0; i < 10; ++i) {
 				DDL_GetRootState(&state, ddlDef);
@@ -256,6 +423,29 @@ void LoadInventory()
 				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
 				{
 					DDL_SetString(&state, &context, inventoryJson["Loadouts"][i]["name"].get<std::string>().c_str());
+				}
+				// loadoutPerks
+				for (int b = 0; b < 3; ++b)
+				{
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.loadoutPerks.%d", i, b);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["loadoutPerks"][b]["loadoutPerksName"].get<std::string>().c_str());
+
+					}
+				}
+				// equipment
+				for (int a = 0; a < 2; ++a)
+				{
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.equipmentSetups.%d.equipment", i, a);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["equipmentSetups"][a]["equipmentName"].get<std::string>().c_str());
+					}
 				}
 				for (int j = 0; j < 2; ++j) {
 					// set camo
@@ -307,14 +497,70 @@ void LoadInventory()
 							DDL_SetInt(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["attachments"][k][1]);
 						}
 					}
+					// set sticker data
+					for (int k = 0; k < 4; ++k) {
+						DDL_GetRootState(&state, ddlDef);
+						sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.sticker.%d", i, j, k);
+						Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+						if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+						{
+							DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["Sticker"][k]["StickerName"].get<std::string>().c_str());
+						}
+					}
+					// set reticle customization
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.reticle", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["reticleName"].get<std::string>().c_str());
+
+					}
+					// set charm data
+					DDL_GetRootState(&state, ddlDef);
+					sprintf_s(buffer, "squadMembers.loadouts.%d.weaponSetups.%d.cosmeticAttachment", i, j);
+					Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+					if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+					{
+						DDL_SetEnum(&state, &context, inventoryJson["Loadouts"][i]["weaponSetup"][j]["cosmeticAttachmentName"].get<std::string>().c_str());
+
+					}
 				}
 			}
-
+			// printf("Loaded Inventory!\n");
 		}
 		else {
-			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer, called before initialized?");
+			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_PRIVATELOADOUTS, called before initialized?");
 		}
-		printf("Loaded Inventory!\n");
+
+		if (CL_PlayerData_GetDDLBuffer(&context, 0, STATS_OFFLINE, STATSGROUP_NONGAME))
+		{
+			ddlDef = (DDLDef*)context.def;
+			for (int i = 0; i < 2; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "nonGameData.customization_patch.%d", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetInt(&state, &context, inventoryJson["customizationPatch"][i]["customizationPatchName"]);
+				}
+			}
+			for (int i = 0; i < 2; ++i)
+			{
+				DDL_GetRootState(&state, ddlDef);
+				sprintf_s(buffer, "nonGameData.customization_background.%d", i);
+				Com_ParseNavStrings(buffer, (const char**)navStrings, 32, &navStringCount);
+				if (DDL_MoveToPath(&state, &state, navStringCount, (const char**)navStrings))
+				{
+					DDL_SetInt(&state, &context, inventoryJson["customizationBackground"][i]["customizationBackgroundName"]);
+				}
+			}
+			// printf("Loaded Customizations!\n");
+		}
+		else {
+			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_NONGAME, called before initialized?");
+		}
 	}
 	else {
 		// Com_SetErrorMessage("[DLL ERROR] Attempted to load inventory from \"players/inventory.json\" but file does not exist. Use 'saveinv' to save your inventory.");
