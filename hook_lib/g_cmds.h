@@ -1,6 +1,8 @@
 #pragma once
 #include "Main.hpp"
 
+void addCustomCmds();
+
 inline utils::hook::detour g_cmdsmp_clientcommand;
 void G_CmdsMP_ClientCommand_Detour(int clientNum);
 
@@ -31,3 +33,5 @@ void Cmd_WeaponDefDump_f();
 void Cmd_ViewVehicleEnts_f();
 
 void Cmd_LoadoutSave_f();
+
+void Cmd_UnlockAll_f();

@@ -15,8 +15,13 @@ const char* SEH_StringEd_GetString_Detour(const char* pszReference)
 	GamerProfile_SetDataByName(0, "acceptedEULA", 1);
 	GamerProfile_SetDataByName(0, "hasEverPlayed_MainMenu", 1);
 
-	if (strstr(pszReference, "LUA_MENU/MAPNAME_ANIYAH") ||
-		strstr(pszReference, "LUA_MENU/MAPNAME_DEADZONE") ||
+	// LUA_MENU/MAPNAME_ANIYAH // Aniyah Palace
+	if (std::string(pszReference) == "LUA_MENU/MAPNAME_ANIYAH")
+	{
+		return "^1no work";
+	}
+
+	if (strstr(pszReference, "LUA_MENU/MAPNAME_DEADZONE") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_M_CAGE") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_CAVE_AM") ||
 		strstr(pszReference, "LUA_MENU/MAPNAME_CAVE") ||

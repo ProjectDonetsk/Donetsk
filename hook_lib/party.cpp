@@ -8,4 +8,6 @@ void PartyHost_StartPrivateParty_Detour(int localClientNum, int localControllerI
 	partyhost_startprivateparty.stub<void>(localClientNum, localControllerIndex, currentlyActive, hostType);
 
 	LoadInventory();
+
+	Cbuf_AddText("set cl_textChatEnabled 1");
 }
