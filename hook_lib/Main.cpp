@@ -52,7 +52,10 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 		printf("Base Address: %p\n", base);
 
 		addCustomDvars();
+		addCustomCmds();
 		patchGame();
+
+		printf("Discord: discord.gg/donetsk\n");
 
 		cmd_args = (CmdArgs*)(0x14D20CBD0_g);
 

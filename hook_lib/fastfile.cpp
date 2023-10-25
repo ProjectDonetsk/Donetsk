@@ -17,3 +17,8 @@ int DB_PollFastfileState_Detour(const char* zoneName)
 
 	return db_pollfastfilestate.stub<int>(zoneName);
 }
+
+bool DB_CheckXFileVersion_Detour()
+{
+	return true;
+}

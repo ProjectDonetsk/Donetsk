@@ -511,6 +511,7 @@ cmd_function_s FastRestart_f_VAR;
 cmd_function_s MapRestart_f_VAR;
 cmd_function_s omnvar_set_f_VAR;
 cmd_function_s omnvar_dump_f_VAR;
+cmd_function_s unlockall_f_VAR;
 
 CmdArgs* cmd_args;
 

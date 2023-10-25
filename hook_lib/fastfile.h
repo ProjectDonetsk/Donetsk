@@ -6,3 +6,6 @@ int DB_LoadXFile_Detour(const char* zoneName, uintptr_t zoneMem, uintptr_t asset
 
 inline utils::hook::detour db_pollfastfilestate;
 int DB_PollFastfileState_Detour(const char* zoneName);
+
+inline utils::hook::detour db_checkxfileversion;
+bool DB_CheckXFileVersion_Detour();

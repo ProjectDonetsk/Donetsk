@@ -5,11 +5,15 @@ int iTick = 0;
 bool bFinished;
 bool btoggle;
 
+dvar_t* cl_textChatEnabled = reinterpret_cast<dvar_t*>(0x14EEB0738_g);
+dvar_t* com_timescale = reinterpret_cast<dvar_t*>(0x14D3865E8_g);
+
 uintptr_t xuid_generated;
 int collision_ticker;
 void R_EndFrame_Detour()
 {
-	if (strcmp(Dvar_GetStringSafe("NSQLTTMRMP"), "mp_donetsk") == 0) {
+	if (strcmp(Dvar_GetStringSafe("NSQLTTMRMP"), "mp_donetsk") == 0)
+	{
 		*reinterpret_cast<int*>(0x14E385A68_g) = 80;
 		*reinterpret_cast<int*>(0x14E385A78_g) = 80;
 		if (collision_ticker == 60) {
@@ -140,6 +144,9 @@ void hooks()
 	com_gamemode_supportsfeature.create(0x1410C8980_g, Com_GameMode_SupportsFeature_Detour);
 
 	lui_cod_luacall_getblueprintdata_impl.create(0x140F58A00_g, LUI_CoD_LuaCall_GetBlueprintData_impl_Detour);
+
+	// remove FF Header version check
+	// db_checkxfileversion.create(0x1411A7840_g, DB_CheckXFileVersion_Detour);
 }
 
 void patchGame()
@@ -181,4 +188,10 @@ void patchGame()
 	utils::hook::nop(0x14165E660_g, 5);
 	utils::hook::nop(0x141665289_g, 5);
 	utils::hook::nop(0x14166567D_g, 5);
+
+	// set com_timescale dvar to read only
+	utils::hook::set<unsigned int>(0x1412B26CF_g, 8192);
+
+	// remove FF Header version check
+	// utils::hook::set<byte>(0x1411A776B_g, 0xEB);
 }

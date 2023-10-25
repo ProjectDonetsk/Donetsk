@@ -130,6 +130,7 @@ extern cmd_function_s FastRestart_f_VAR;
 extern cmd_function_s MapRestart_f_VAR;
 extern cmd_function_s omnvar_set_f_VAR;
 extern cmd_function_s omnvar_dump_f_VAR;
+extern cmd_function_s unlockall_f_VAR;
 extern CmdArgs* cmd_args;
 
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler);
