@@ -238,7 +238,7 @@ void SaveInventory()
 				}
 			}
 		}
-		// printf("Saved Inventory!\n");
+		printf("Saved Inventory!\n");
 	}
 	else {
 		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_PRIVATELOADOUTS, called before initialized?");
@@ -268,7 +268,7 @@ void SaveInventory()
 				inventoryJson["customizationBackground"][i] = { {"customizationBackgroundName", DDL_GetInt(&state, &context)} };
 			}
 		}
-		// printf("Saved Customizations!\n");
+		printf("Saved Customizations!\n");
 	}
 	else {
 		Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_NONGAME, called before initialized?");
@@ -527,7 +527,7 @@ void LoadInventory()
 					}
 				}
 			}
-			// printf("Loaded Inventory!\n");
+			printf("Loaded Inventory!\n");
 		}
 		else {
 			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_PRIVATELOADOUTS, called before initialized?");
@@ -556,7 +556,7 @@ void LoadInventory()
 					DDL_SetInt(&state, &context, inventoryJson["customizationBackground"][i]["customizationBackgroundName"]);
 				}
 			}
-			// printf("Loaded Customizations!\n");
+			printf("Loaded Customizations!\n");
 		}
 		else {
 			Com_SetErrorMessage("[DLL ERROR] Couldn't get DDLBuffer for STATSGROUP_NONGAME, called before initialized?");
