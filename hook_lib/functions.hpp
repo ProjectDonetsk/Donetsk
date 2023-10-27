@@ -178,6 +178,7 @@ bool LUI_LuaCall_Game_IsEntityAlive(uintptr_t luaVM, int entityNum);
 void Cbuf_AddText(const char* cmd);
 
 bool lua_toboolean(uintptr_t L, int idx);
+const char* lua_tolstring(uintptr_t L, int idx, size_t* len);
 
 void lua_pushboolean(uintptr_t L, int b);
 void lua_remove(uintptr_t L, int idx);
@@ -187,6 +188,9 @@ void lua_pushvalue(uintptr_t L, int idx);
 void lua_pushstring(uintptr_t L, const char* str);
 void lua_pushinteger(uintptr_t L, int n);
 void lua_settop(uintptr_t L, int idx);
+
+bool lua_isstring(uintptr_t L, int idx);
+
 int LuaShared_PCall(uintptr_t luaVM, int nargs, int nresults);
 
 bool CG_DObjGetWorldBoneMatrix(uintptr_t pose, uintptr_t obj, int boneIndex, uintptr_t outTagMat, float* outOrigin);

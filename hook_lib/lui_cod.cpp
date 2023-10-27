@@ -20,8 +20,19 @@ int LuaShared_LuaCall_IsDemoBuild_Detour(uintptr_t luaVM)
 	return 1;
 }
 
-int LUI_CoD_LuaCall_GetBlueprintData_impl_Detour(uintptr_t luaState)
-{
-	SaveInventory();
-	return 0;
+void LUI_CoD_LuaCall_EngineNotifyServer_Detour(uintptr_t luaVM) {
+	static std::unordered_map<std::string, std::function<void()>> handlerMap{
+		{"class_edit", SaveInventory},
+		{"loadout_showcase_entered", SaveInventory}
+	};
+	if (lua_isstring(luaVM, 1)) {
+		size_t strLen = 0;
+		const char* rawStr = lua_tolstring(luaVM, 1, &strLen);
+		std::string str(rawStr, strLen);
+		if (handlerMap.find(str) != handlerMap.cend())
+		{
+			handlerMap.at(str)();
+		}
+	}
+	lui_cod_luacall_enginenotifyserver_detour_impl.stub<void>(luaVM);
 }

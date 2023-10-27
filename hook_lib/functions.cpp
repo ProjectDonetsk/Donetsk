@@ -193,6 +193,11 @@ bool lua_toboolean(uintptr_t L, int idx) {
 	return func(L, idx);
 }
 
+const char* lua_tolstring(uintptr_t L, int idx, size_t* len) {
+	auto func = reinterpret_cast<const char* (*)(uintptr_t, int, size_t*)>(0x142084950_g);
+	return func(L, idx, len);
+}
+
 void lua_pushboolean(uintptr_t L, int b) {
 	auto func = reinterpret_cast<void(*)(uintptr_t, int)>(0x142083E80_g);
 	func(L, b);
@@ -231,6 +236,11 @@ void lua_pushinteger(uintptr_t L, int n) {
 void lua_settop(uintptr_t L, int idx) {
 	auto func = reinterpret_cast<void(*)(uintptr_t, int)>(0x142084790_g);
 	func(L, idx);
+}
+
+bool lua_isstring(uintptr_t L, int idx) {
+	auto func = reinterpret_cast<bool(*)(uintptr_t, int)>(0x142083A30_g);
+	return func(L, idx);
 }
 
 int LuaShared_PCall(uintptr_t luaVM, int nargs, int nresults) {
