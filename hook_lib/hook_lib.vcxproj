@@ -180,7 +180,6 @@
     <ClCompile Include="patch.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="script.cpp" />
-    <ClCompile Include="splashscreen.cpp" />
     <ClCompile Include="stringed.cpp" />
     <ClCompile Include="structs.cpp" />
     <ClCompile Include="sv_main.cpp" />
@@ -226,7 +225,6 @@
     <ClInclude Include="patch.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="script.h" />
-    <ClInclude Include="splashscreen.hpp" />
     <ClInclude Include="stringed.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="sv_main.h" />

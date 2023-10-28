@@ -70,9 +70,6 @@
     <ClCompile Include="assets.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
-    <ClCompile Include="splashscreen.cpp">
-      <Filter>hook_lib\game</Filter>
-    </ClCompile>
     <ClCompile Include="cmd.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
@@ -265,9 +262,6 @@
       <Filter>hook_lib\game</Filter>
     </ClInclude>
     <ClInclude Include="zones.h">
-      <Filter>hook_lib\game</Filter>
-    </ClInclude>
-    <ClInclude Include="splashscreen.hpp">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
   </ItemGroup>

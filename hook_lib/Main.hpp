@@ -21,7 +21,6 @@
 
 #include "ini.h"
 #include "json.hpp"
-#include "splashscreen.hpp"
 
 #define base g_Addrs.ModuleBase
 

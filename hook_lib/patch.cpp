@@ -96,7 +96,7 @@ int LiveStorage_GetActiveStatsSource_Detour()
 
 void Donetsk()
 {
-	set_splashscreen();
+	// set_splashscreen();
 }
 
 void hooks()
