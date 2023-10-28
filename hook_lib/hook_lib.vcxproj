@@ -226,6 +226,7 @@
     <ClInclude Include="patch.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="script.h" />
+    <ClInclude Include="splashscreen.hpp" />
     <ClInclude Include="stringed.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="sv_main.h" />

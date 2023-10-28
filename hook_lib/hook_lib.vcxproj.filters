@@ -267,5 +267,8 @@
     <ClInclude Include="zones.h">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
+    <ClInclude Include="splashscreen.hpp">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ bool bFinished;
 bool btoggle;
 
 dvar_t* cl_textChatEnabled = reinterpret_cast<dvar_t*>(0x14EEB0738_g);
-dvar_t* com_timescale = reinterpret_cast<dvar_t*>(0x14D3865E8_g);
 
 uintptr_t xuid_generated;
 int collision_ticker;
@@ -95,6 +94,11 @@ int LiveStorage_GetActiveStatsSource_Detour()
 	return 1;
 }
 
+void Donetsk()
+{
+	set_splashscreen();
+}
+
 void hooks()
 {
 	process_script_file.create(0x141322350_g, ProcessScriptFile);
@@ -152,6 +156,7 @@ void hooks()
 void patchGame()
 {
 	hooks();
+	Donetsk();
 
 	// patch ui_maxclients limit
 	utils::hook::nop(0x140F30210_g, 5);
@@ -188,9 +193,6 @@ void patchGame()
 	utils::hook::nop(0x14165E660_g, 5);
 	utils::hook::nop(0x141665289_g, 5);
 	utils::hook::nop(0x14166567D_g, 5);
-
-	// set com_timescale dvar to read only
-	utils::hook::set<unsigned int>(0x1412B26CF_g, 8192);
 
 	// remove FF Header version check
 	// utils::hook::set<byte>(0x1411A776B_g, 0xEB);
