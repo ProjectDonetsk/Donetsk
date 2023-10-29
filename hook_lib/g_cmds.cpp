@@ -11,6 +11,7 @@ void addCustomCmds()
 	Cmd_AddCommandInternal("quit", Cmd_Quit_f, &quit_f_VAR);
 	Cmd_AddCommandInternal("openmenu", Cmd_OpenMenu_f, &openmenu_f_VAR);
 	Cmd_AddCommandInternal("addbot", Cmd_AddBot_f, &addbot_f_VAR);
+	Cmd_AddCommandInternal("addtestclient", Cmd_AddTestClient_f, &addTestClient_f_VAR);
 	Cmd_AddCommandInternal("ddldump", Cmd_DDLDump_f, &ddldump_f_VAR);
 	Cmd_AddCommandInternal("weapondefdump", Cmd_WeaponDefDump_f, &weapondefdump_f_VAR);
 	//Cmd_AddCommandInternal("view_vehicle_ents", Cmd_ViewVehicleEnts_f, &view_vehicle_ents_f_VAR);
@@ -283,11 +284,76 @@ void Cmd_OpenMenu_f()
 	}
 }
 
+void Cmd_AddTestClient_f()
+{
+	auto max_clients = *(int*)0x14EEB0CE0_g;
+	auto client_count = *(int*)0x14E195070_g;
+	auto spawnable_bots = max_clients - client_count;
+	if (spawnable_bots <= 0)
+		return;
+
+	int spawn_number = 1;
+	if (Cmd_Argc() == 2)
+	{
+		char command[100]{ 0 };
+		Cmd_ArgvBuffer(1, command, sizeof(command));
+		spawn_number = atoll(command);
+	}
+
+	if (spawn_number > spawnable_bots)
+		spawn_number = spawnable_bots;
+
+	std::vector<short*> ents{};
+	for (int i{}; i < spawn_number; ++i)
+	{
+		auto ent = SV_ClientMP_AddTestClient();
+		if (!ent)
+			continue;
+
+		GScr_AddEntity(ent);
+		SV_ClientMP_SpawnBotOrTestClient(ent);
+		ents.push_back(ent);
+	}
+
+	Sleep(100);
+	for (auto& ent : ents) {
+		auto scrContext = ScriptContext_Server();
+		Scr_AddString(scrContext, "class1");
+		Scr_AddString(scrContext, "class_select");
+		GScr_Notify(ent, SL_GetString("loadout_class_selected"), 2);
+	}
+}
+
 void Cmd_AddBot_f()
 {
-	auto ent = SV_ClientMP_AddTestClient();
-	GScr_AddEntity(ent);
-	SV_ClientMP_SpawnBotOrTestClient(ent);
+	auto max_clients = *(int*)0x14EEB0CE0_g;
+	auto client_count = *(int*)0x14E195070_g;
+	auto spawnable_bots = max_clients - client_count;
+	if (spawnable_bots <= 0)
+		return;
+
+	int spawn_number = 1;
+	if (Cmd_Argc() == 2)
+	{
+		char command[100]{ 0 };
+		Cmd_ArgvBuffer(1, command, sizeof(command));
+		spawn_number = atoll(command);
+	}
+
+	if (spawn_number > spawnable_bots)
+		spawn_number = spawnable_bots;
+
+
+	for (int i{}; i < spawn_number; ++i)
+	{
+		auto ent = SV_ClientMP_AddBot();
+		if (!ent)
+			return;
+
+		GScr_AddEntity(ent);
+		SV_ClientMP_SpawnBotOrTestClient(ent);
+		//Sleep(20);
+	}
 }
 
 void SV_CmdsMP_MapRestart_f()
