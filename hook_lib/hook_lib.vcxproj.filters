@@ -109,7 +109,7 @@
     <ClCompile Include="omnvars.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
-    <ClCompile Include="party.cpp">
+    <ClCompile Include="mp_init.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
     <ClCompile Include="patch.cpp">
@@ -240,7 +240,7 @@
     <ClInclude Include="omnvars.h">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
-    <ClInclude Include="party.h">
+    <ClInclude Include="mp_init.h">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
     <ClInclude Include="patch.h">
