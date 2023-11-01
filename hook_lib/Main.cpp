@@ -41,6 +41,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 		FILE* Dummy;
 		freopen_s(&Dummy, "CONOUT$", "w", stdout);
 		freopen_s(&Dummy, "CONIN$", "r", stdin);
+		SetConsoleTitleA("Donetsk Client Console");
 
 		utils::nt::library game{};
 		utils::nt::library user32("user32.dll");

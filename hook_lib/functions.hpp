@@ -132,6 +132,8 @@ extern cmd_function_s MapRestart_f_VAR;
 extern cmd_function_s omnvar_set_f_VAR;
 extern cmd_function_s omnvar_dump_f_VAR;
 extern cmd_function_s unlockall_f_VAR;
+extern cmd_function_s dump_weapdefs_f_VAR;
+extern cmd_function_s load_weapdef_f_VAR;
 extern CmdArgs* cmd_args;
 
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler);

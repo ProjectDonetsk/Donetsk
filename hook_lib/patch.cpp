@@ -6,7 +6,6 @@ bool bFinished;
 bool btoggle;
 
 dvar_t* cl_textChatEnabled = reinterpret_cast<dvar_t*>(0x14EEB0738_g);
-dvar_t* com_timescale = reinterpret_cast<dvar_t*>(0x14D3865E8_g);
 
 uintptr_t xuid_generated;
 int collision_ticker;
@@ -143,6 +142,7 @@ void hooks()
 
 	cl_createdevgui.create(0x1415B2080_g, CL_CreateDevGui_Detour);
 	cg_mainmp_init.create(0x141792E60_g, CG_MainMP_Init_Detour);
+	partyhost_startprivateparty.create(0x14119F0D0_g, PartyHost_StartPrivateParty_Detour);
 
 	PM_WeaponUseAmmo.create(0x141155AF0_g, PM_WeaponUseAmmo_Detour);
 
@@ -195,9 +195,6 @@ void patchGame()
 	utils::hook::nop(0x14165E660_g, 5);
 	utils::hook::nop(0x141665289_g, 5);
 	utils::hook::nop(0x14166567D_g, 5);
-
-	// set com_timescale dvar to read only
-	utils::hook::set<unsigned int>(0x1412B26CF_g, 8192);
 
 	// remove FF Header version check
 	// utils::hook::set<byte>(0x1411A776B_g, 0xEB);

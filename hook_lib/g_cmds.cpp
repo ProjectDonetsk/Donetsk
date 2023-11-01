@@ -13,7 +13,7 @@ void addCustomCmds()
 	Cmd_AddCommandInternal("addbot", Cmd_AddBot_f, &addbot_f_VAR);
 	Cmd_AddCommandInternal("addtestclient", Cmd_AddTestClient_f, &addTestClient_f_VAR);
 	Cmd_AddCommandInternal("ddldump", Cmd_DDLDump_f, &ddldump_f_VAR);
-	Cmd_AddCommandInternal("weapondefdump", Cmd_WeaponDefDump_f, &weapondefdump_f_VAR);
+	// Cmd_AddCommandInternal("weapondefdump", Cmd_WeaponDefDump_f, &weapondefdump_f_VAR);
 	//Cmd_AddCommandInternal("view_vehicle_ents", Cmd_ViewVehicleEnts_f, &view_vehicle_ents_f_VAR);
 	// Cmd_AddCommandInternal("save_inventory", Cmd_LoadoutSave_f, &loadout_save_f_VAR);
 	Cmd_AddCommandInternal("map_restart", SV_CmdsMP_MapRestart_f, &MapRestart_f_VAR);
@@ -21,6 +21,8 @@ void addCustomCmds()
 	Cmd_AddCommandInternal("setOmnvar", Cmd_Omnvar_Set_f, &omnvar_set_f_VAR);
 	// Cmd_AddCommandInternal("dumpomnvars", Cmd_Omnvars_Dump_f, &omnvar_dump_f_VAR);
 	Cmd_AddCommandInternal("unlockAll", Cmd_UnlockAll_f, &unlockall_f_VAR);
+	Cmd_AddCommandInternal("dumpweapondef", Cmd_WeaponDefDump_f, &dump_weapdefs_f_VAR);
+	Cmd_AddCommandInternal("loadweapondef", Cmd_WeaponDef_Load_f, &load_weapdef_f_VAR);
 }
 
 void G_CmdsMP_ClientCommand_Detour(int clientNum)
@@ -429,20 +431,10 @@ void Cmd_DDLDump_f()
 
 void Cmd_WeaponDefDump_f()
 {
-	//Globals
-	uintptr_t* bg_weaponCompleteDefs = reinterpret_cast<uintptr_t*>(0x14C6EC870_g);
-
-	printf("DUMPING WEAPON DEFINITIONS!!! --- \n");
-
-	for (int i = 0; i < 550; i++) {
-		WeaponCompleteDef* weap = reinterpret_cast<WeaponCompleteDef*>(bg_weaponCompleteDefs[i]);
-
-		if (!weap) continue;
-		printf("szInternalName: %s\n", weap->szInternalName);
-		printf("szDisplayName: %s\n", weap->szDisplayName);
+	if (CheatsOk(0))
+	{
+		Dump_WeaponDef();
 	}
-
-	printf("FINISHED WEAPON DEFINITION DUMP YAY!!! --- \n");
 }
 
 void Cmd_ViewVehicleEnts_f()
@@ -467,4 +459,12 @@ void Cmd_LoadoutSave_f()
 void Cmd_UnlockAll_f()
 {
 	Cbuf_AddText("seta unlockAllItems 1");
+}
+
+void Cmd_WeaponDef_Load_f()
+{
+	if (CheatsOk(0))
+	{
+		Load_WeaponDef();
+	}
 }

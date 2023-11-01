@@ -2,7 +2,17 @@
 
 bool Com_GameMode_SupportsFeature_Detour(unsigned int featureID)
 {
-	if (featureID == 70) // TIMESCALE_TWEAKING
+	static dvar_t* com_timescale;
+	static dvar_t* timescale;
+
+	if (com_timescale == nullptr && featureID == 70)
+	{
+		com_timescale = (dvar_t*)Dvar_FindVarByName("LNOTRKNRPS");
+		timescale = (dvar_t*)Dvar_FindVarByName("MSNTNLNQNM");
+		// fixes slowmotion final killcam, but not in an ideal way
+	}
+
+	if (featureID == 70 && timescale->current.value != 1.0) // TIMESCALE_TWEAKING
 	{
 		return true;
 	}
