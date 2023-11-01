@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "transients.h"
 #include "game_inc.h"
 

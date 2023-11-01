@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "g_cmds.h"
 #include "game_inc.h"
 
@@ -216,7 +217,7 @@ void set_byte_f()
 	if (Cmd_Argc() == 3)
 	{
 		Cmd_ArgvBuffer(1, command, 500);
-		uintptr_t address = atoll(command) + base;
+		uintptr_t address = _b(atoll(command));
 		Cmd_ArgvBuffer(2, command, 500);
 		utils::hook::set<unsigned char>(address, atoi(command));
 	}
@@ -228,7 +229,7 @@ void set_short_f()
 	if (Cmd_Argc() == 3)
 	{
 		Cmd_ArgvBuffer(1, command, 500);
-		uintptr_t address = atoll(command) + base;
+		uintptr_t address = _b(atoll(command));
 		Cmd_ArgvBuffer(2, command, 500);
 		utils::hook::set<unsigned short>(address, atol(command));
 	}
@@ -240,7 +241,7 @@ void set_int_f()
 	if (Cmd_Argc() == 3)
 	{
 		Cmd_ArgvBuffer(1, command, 500);
-		uintptr_t address = atoll(command) + base;
+		uintptr_t address = _b(atoll(command));
 		Cmd_ArgvBuffer(2, command, 500);
 		utils::hook::set<unsigned int>(address, _atoi64(command));
 	}
@@ -252,7 +253,7 @@ void set_float_f()
 	if (Cmd_Argc() == 3)
 	{
 		Cmd_ArgvBuffer(1, command, 500);
-		uintptr_t address = atoll(command) + base;
+		uintptr_t address = _b(atoll(command));
 		Cmd_ArgvBuffer(2, command, 500);
 		utils::hook::set<float>(address, strToFloat(command));
 	}
@@ -264,7 +265,7 @@ void set_pointer_f()
 	if (Cmd_Argc() == 3)
 	{
 		Cmd_ArgvBuffer(1, command, 500);
-		uintptr_t address = atoll(command) + base;
+		uintptr_t address = _b(atoll(command));
 		Cmd_ArgvBuffer(2, command, 500);
 		utils::hook::set<unsigned __int64>(address, _atoi64(command));
 	}

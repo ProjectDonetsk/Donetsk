@@ -82,6 +82,7 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetName>discord_game_sdk</TargetName>
     <LibraryPath>$(SolutionDir)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\hook_lib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -149,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="addr_utils.cpp" />
     <ClCompile Include="cmd.cpp" />
     <ClCompile Include="common\exception\minidump.cpp" />
     <ClCompile Include="common\utils\binary_resource.cpp" />
@@ -189,6 +191,7 @@
     <ClCompile Include="zones.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="addr_utils.hpp" />
     <ClInclude Include="assets.h" />
     <ClInclude Include="cmd.h" />
     <ClInclude Include="common\exception\minidump.hpp" />

@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "functions.hpp"
 
 void* RtlAddVectoredExceptionHandler(LONG First, PVECTORED_EXCEPTION_HANDLER Handler) {
@@ -542,5 +543,3 @@ cmd_function_s dump_weapdefs_f_VAR;
 cmd_function_s load_weapdef_f_VAR;
 
 CmdArgs* cmd_args;
-
-Addresses g_Addrs;

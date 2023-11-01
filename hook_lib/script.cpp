@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "script.h"
 #include "game_inc.h"
 
