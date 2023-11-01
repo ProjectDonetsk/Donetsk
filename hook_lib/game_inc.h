@@ -13,6 +13,7 @@
 #include "stringed.h"
 #include "fastfile.h"
 #include "mp_init.h"
+#include "party.h"
 #include "ddl.h"
 #include "gamemode.h"
 #include "sv_main.h"

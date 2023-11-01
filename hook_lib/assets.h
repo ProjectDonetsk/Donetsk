@@ -4077,7 +4077,7 @@ struct __declspec(align(8)) WeaponDef
 struct WeaponCompleteDef
 {
 	const char* szInternalName;
-	WeaponDef weapDef;
+	WeaponDef* weapDef;
 	const char* szDisplayName;
 	const char* szLootTable;
 	scr_string_t* hideTags;

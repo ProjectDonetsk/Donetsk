@@ -142,6 +142,7 @@ void hooks()
 
 	cl_createdevgui.create(0x1415B2080_g, CL_CreateDevGui_Detour);
 	cg_mainmp_init.create(0x141792E60_g, CG_MainMP_Init_Detour);
+	partyhost_startprivateparty.create(0x14119F0D0_g, PartyHost_StartPrivateParty_Detour);
 
 	PM_WeaponUseAmmo.create(0x141155AF0_g, PM_WeaponUseAmmo_Detour);
 

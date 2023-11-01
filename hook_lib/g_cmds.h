@@ -37,3 +37,5 @@ void Cmd_ViewVehicleEnts_f();
 void Cmd_LoadoutSave_f();
 
 void Cmd_UnlockAll_f();
+
+void Cmd_WeaponDef_Load_f();

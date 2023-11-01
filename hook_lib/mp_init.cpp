@@ -5,9 +5,5 @@ void CG_MainMP_Init_Detour(int localClientNum, int serverMessageNum, int serverC
 {
 	cg_mainmp_init.stub<void>(localClientNum, serverMessageNum, serverCommandSequence, clientNum, hunkUser);
 
-	Cbuf_AddText("exec autoexec.cfg");
-
-	LoadInventory();
-
 	Cbuf_AddText("set cl_textChatEnabled 1");
 }
