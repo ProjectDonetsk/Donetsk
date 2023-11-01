@@ -95,6 +95,11 @@ int LiveStorage_GetActiveStatsSource_Detour()
 	return 1;
 }
 
+bool ProfanityFilter_IsBadWord_Detour()
+{
+	return false;
+}
+
 void hooks()
 {
 	process_script_file.create(0x141322350_g, ProcessScriptFile);
@@ -144,6 +149,8 @@ void hooks()
 	com_gamemode_supportsfeature.create(0x1410C8980_g, Com_GameMode_SupportsFeature_Detour);
 
 	lui_cod_luacall_enginenotifyserver_detour_impl.create(0x1419F7160_g, LUI_CoD_LuaCall_EngineNotifyServer_Detour);
+
+	utils::hook::jump(0x141609140_g, ProfanityFilter_IsBadWord_Detour);
 
 	// remove FF Header version check
 	// db_checkxfileversion.create(0x1411A7840_g, DB_CheckXFileVersion_Detour);
