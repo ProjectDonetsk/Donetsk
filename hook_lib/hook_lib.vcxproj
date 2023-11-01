@@ -176,7 +176,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="net_chan.cpp" />
     <ClCompile Include="omnvars.cpp" />
-    <ClCompile Include="party.cpp" />
+    <ClCompile Include="mp_init.cpp" />
     <ClCompile Include="patch.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="script.cpp" />
@@ -221,7 +221,7 @@
     <ClInclude Include="MinHook.hpp" />
     <ClInclude Include="net_chan.h" />
     <ClInclude Include="omnvars.h" />
-    <ClInclude Include="party.h" />
+    <ClInclude Include="mp_init.h" />
     <ClInclude Include="patch.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="script.h" />

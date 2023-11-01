@@ -122,6 +122,7 @@ extern cmd_function_s set_pointer_f_VAR;
 extern cmd_function_s quit_f_VAR;
 extern cmd_function_s openmenu_f_VAR;
 extern cmd_function_s addbot_f_VAR;
+extern cmd_function_s addTestClient_f_VAR;
 extern cmd_function_s ddldump_f_VAR;
 extern cmd_function_s weapondefdump_f_VAR;
 extern cmd_function_s view_vehicle_ents_f_VAR;
@@ -240,6 +241,9 @@ void Com_SetErrorMessage(const char* errorMessage);
 void GamerProfile_SetDataByName(unsigned int controllerIndex, const char* settingName, float settingValue);
 
 short* SV_ClientMP_AddTestClient();
+short* SV_ClientMP_AddBot();
+void GScr_Notify(short* ent, unsigned int stringValue, unsigned int paramcount);
+int SL_GetString(const char* value);
 
 void GScr_AddEntity(short* entity);
 

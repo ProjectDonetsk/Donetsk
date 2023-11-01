@@ -94,9 +94,9 @@ int LiveStorage_GetActiveStatsSource_Detour()
 	return 1;
 }
 
-void Donetsk()
+bool ProfanityFilter_IsBadWord_Detour()
 {
-	// set_splashscreen();
+	return false;
 }
 
 void hooks()
@@ -141,13 +141,15 @@ void hooks()
 	seh_stringed_getstring.create(0x1413CC2A0_g, SEH_StringEd_GetString_Detour);
 
 	cl_createdevgui.create(0x1415B2080_g, CL_CreateDevGui_Detour);
-	partyhost_startprivateparty.create(0x14119F0D0_g, PartyHost_StartPrivateParty_Detour);
+	cg_mainmp_init.create(0x141792E60_g, CG_MainMP_Init_Detour);
 
 	PM_WeaponUseAmmo.create(0x141155AF0_g, PM_WeaponUseAmmo_Detour);
 
 	com_gamemode_supportsfeature.create(0x1410C8980_g, Com_GameMode_SupportsFeature_Detour);
 
 	lui_cod_luacall_enginenotifyserver_detour_impl.create(0x1419F7160_g, LUI_CoD_LuaCall_EngineNotifyServer_Detour);
+
+	utils::hook::jump(0x141609140_g, ProfanityFilter_IsBadWord_Detour);
 
 	// remove FF Header version check
 	// db_checkxfileversion.create(0x1411A7840_g, DB_CheckXFileVersion_Detour);
@@ -156,7 +158,6 @@ void hooks()
 void patchGame()
 {
 	hooks();
-	Donetsk();
 
 	// patch ui_maxclients limit
 	utils::hook::nop(0x140F30210_g, 5);
