@@ -398,6 +398,11 @@ void Scr_AddString(scrContext_t* scrContext, const char* value) {
 	func(scrContext, value);
 }
 
+int SL_GetString(const char* value) {
+	auto func = reinterpret_cast<int(*)(const char*)>(0x14131AE30_g);
+	return func(value);
+}
+
 unsigned int GScr_ExecEntThread(gentity_s* ent, int handle, unsigned int paramcount) {
 	auto func = reinterpret_cast<unsigned int(*)(gentity_s*, int, unsigned int)>(0x141257D70_g);
 	return func(ent, handle, paramcount);
@@ -461,10 +466,20 @@ short* SV_ClientMP_AddTestClient()
 	return SV_ClientMP_AddTestClient_func();
 }
 
+short* SV_ClientMP_AddBot()
+{
+	auto func = reinterpret_cast<short*(*)(const char* bot_name, unsigned int head, unsigned int body, unsigned int helmet)>(0x14136E210_g);
+	return func("DONETSK", 0,0,0);
+}
+
 void GScr_AddEntity(short* entity)
 {
 	auto GScr_AddEntity_func = reinterpret_cast<void(*)(short* ent)>(0x1412578a0_g);
 	GScr_AddEntity_func(entity);
+}
+
+void GScr_Notify(short* ent, unsigned int stringValue, unsigned int paramcount) {
+	reinterpret_cast<void(*)(short*, unsigned int, unsigned int)>(0x141259B30_g)(ent, stringValue, paramcount);
 }
 
 void SV_ClientMP_SpawnBotOrTestClient(short* entity)
@@ -513,6 +528,7 @@ cmd_function_s set_pointer_f_VAR;
 cmd_function_s quit_f_VAR;
 cmd_function_s openmenu_f_VAR;
 cmd_function_s addbot_f_VAR;
+cmd_function_s addTestClient_f_VAR;
 cmd_function_s ddldump_f_VAR;
 cmd_function_s weapondefdump_f_VAR;
 cmd_function_s view_vehicle_ents_f_VAR;

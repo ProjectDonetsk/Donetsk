@@ -22,6 +22,8 @@ void Cmd_OpenMenu_f();
 
 void Cmd_AddBot_f();
 
+void Cmd_AddTestClient_f();
+
 void SV_CmdsMP_MapRestart_f();
 
 void SV_CmdsMP_FastRestart_f();
