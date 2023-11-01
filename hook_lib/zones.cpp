@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "zones.h"
 #include "game_inc.h"
 

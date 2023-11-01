@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "omnvars.h"
 
 int BG_Omnvar_GetType(OmnvarDef* ovDef)

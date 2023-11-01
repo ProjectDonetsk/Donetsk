@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "input.h"
 
 void CL_Keys_Event_Detour(int localClientNum, int key, bool down, unsigned int time, int virtualKey, int controllerIndex)

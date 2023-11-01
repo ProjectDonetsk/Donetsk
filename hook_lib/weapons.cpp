@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "weapons.h"
 #include "game_inc.h"
 

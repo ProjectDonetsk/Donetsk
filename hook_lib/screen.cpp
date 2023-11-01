@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "screen.h"
 
 void CG_DrawWaterMark()

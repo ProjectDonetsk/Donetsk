@@ -22,17 +22,9 @@
 #include "ini.h"
 #include "json.hpp"
 
-#define base g_Addrs.ModuleBase
-
 #pragma warning(disable:4996)
 #pragma comment(lib, "Gdi32.lib")
 
-
-
-
-#define INRANGE(x, a, b)   (x >= a && x <= b)
-#define GET_BITS( x )    (INRANGE((x&(~0x20)),'A','F') ? ((x&(~0x20)) - 'A' + 0xa) : (INRANGE(x,'0','9') ? x - '0' : 0))
-#define GET_BYTE( x )    (GET_BITS(x[0]) << 4 | GET_BITS(x[1]))
 
 struct menu_variables {
 	bool bInitiateMenu;
@@ -40,17 +32,6 @@ struct menu_variables {
 
 };
 extern menu_variables vars;
-
-uintptr_t find_pattern(const char* module_name, const char* pattern);
-uintptr_t find_pattern(uintptr_t start, const char* module_name, const char* pattern);
-
-size_t operator"" _b(size_t val);
-size_t reverse_b(size_t val);
-size_t reverse_b(const void* val);
-
-size_t operator"" _g(size_t val);
-size_t reverse_g(size_t val);
-size_t reverse_g(const void* val);
 
 struct DvarPair
 {

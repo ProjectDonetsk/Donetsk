@@ -5,11 +5,6 @@ struct gentity_s;
 
 struct CmdArgs;
 
-struct Addresses {
-	uintptr_t ModuleBase;
-	uintptr_t jmp_rbx;
-};
-
 union DvarValue
 {
 	bool enabled;
@@ -258,5 +253,3 @@ int G_Main_GetTime();
 const char* _va(const char* format, ...);
 
 #pragma endregion
-
-extern Addresses g_Addrs;

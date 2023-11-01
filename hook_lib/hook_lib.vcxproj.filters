@@ -67,6 +67,9 @@
     <ClCompile Include="structs.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
+    <ClCompile Include="addr_utils.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
     <ClCompile Include="assets.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
@@ -190,6 +193,9 @@
       <Filter>common\utils</Filter>
     </ClInclude>
     <ClInclude Include="structs.h">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="addr_utils.hpp">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
     <ClInclude Include="assets.h">

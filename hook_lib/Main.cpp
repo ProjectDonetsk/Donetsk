@@ -1,6 +1,8 @@
 #include "Main.hpp"
 #include "game_inc.h"
 
+#include "addr_utils.hpp"
+
 void entry_point()
 {
 	XUID xuid;
@@ -34,7 +36,7 @@ char buffer[0x5000];
 
 BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 {
-	g_Addrs.ModuleBase = (uintptr_t)(GetModuleHandle(0));
+	initAddrUtils();
 	utils::hook::set<char>(0x1403061A0_g, 0xC3); // Mystery function 1
 	if (Reason == DLL_PROCESS_ATTACH) {
 		AllocConsole();
@@ -50,7 +52,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 
 		va = (const char* (*)(const char*, ...))0x1413F3010_g; //j_va
 
-		printf("Base Address: %p\n", base);
+		printf("Base Address: %p\n", 0_b);
 
 		addCustomDvars();
 		addCustomCmds();
@@ -66,127 +68,4 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 	return TRUE;
 }
 
-uintptr_t find_pattern(const char* module_name, const char* pattern) {
-	const auto get_module_size = [=](uintptr_t module_base)
-		{
-			return reinterpret_cast<PIMAGE_NT_HEADERS>(module_base + reinterpret_cast<PIMAGE_DOS_HEADER>(module_base)->e_lfanew)->OptionalHeader.SizeOfImage;
-		};
-	const auto module_start = (uintptr_t)GetModuleHandle(module_name);
-	if (module_start != 0ULL)
-	{
-		const auto module_end = module_start + get_module_size(module_start);
-
-		const char* pattern_current = pattern;
-		uintptr_t current_match = NULL;
-
-		MEMORY_BASIC_INFORMATION64 page_information = {};
-		for (auto current_page = reinterpret_cast<unsigned char*>(module_start); current_page < reinterpret_cast<unsigned char*>(module_end); current_page = reinterpret_cast<unsigned char*>(page_information.BaseAddress + page_information.RegionSize))
-		{
-			VirtualQuery(reinterpret_cast<LPCVOID>(current_page), reinterpret_cast<PMEMORY_BASIC_INFORMATION>(&page_information), sizeof(MEMORY_BASIC_INFORMATION));
-			if (page_information.Protect == PAGE_NOACCESS)
-				continue;
-
-			if (page_information.State != MEM_COMMIT)
-				continue;
-
-			if (page_information.Protect & PAGE_GUARD)
-				continue;
-
-			for (auto current_address = reinterpret_cast<unsigned char*>(page_information.BaseAddress); current_address < reinterpret_cast<unsigned char*>(page_information.BaseAddress + page_information.RegionSize - 0x8); current_address++)
-			{
-				if (*current_address != GET_BYTE(pattern_current) && *pattern_current != '\?') {
-					current_match = 0ULL;
-					pattern_current = pattern;
-					continue;
-				}
-
-				if (!current_match)
-					current_match = reinterpret_cast<uintptr_t>(current_address);
-
-				pattern_current += 3;
-				if (pattern_current[-1] == NULL)
-					return current_match;
-			}
-		}
-	}
-
-	return 0ULL;
-}
-
-uintptr_t find_pattern(uintptr_t start, const char* module_name, const char* pattern) {
-	const auto get_module_size = [=](uintptr_t module_base)
-		{
-			return reinterpret_cast<PIMAGE_NT_HEADERS>(module_base + reinterpret_cast<PIMAGE_DOS_HEADER>(module_base)->e_lfanew)->OptionalHeader.SizeOfImage;
-		};
-	const auto module_start = start;
-	if (module_start != 0ULL)
-	{
-		const auto module_end = module_start + get_module_size(module_start);
-
-		const char* pattern_current = pattern;
-		uintptr_t current_match = NULL;
-
-		MEMORY_BASIC_INFORMATION64 page_information = {};
-		for (auto current_page = reinterpret_cast<unsigned char*>(module_start); current_page < reinterpret_cast<unsigned char*>(module_end); current_page = reinterpret_cast<unsigned char*>(page_information.BaseAddress + page_information.RegionSize))
-		{
-			VirtualQuery(reinterpret_cast<LPCVOID>(current_page), reinterpret_cast<PMEMORY_BASIC_INFORMATION>(&page_information), sizeof(MEMORY_BASIC_INFORMATION));
-			if (page_information.Protect == PAGE_NOACCESS)
-				continue;
-
-			if (page_information.State != MEM_COMMIT)
-				continue;
-
-			if (page_information.Protect & PAGE_GUARD)
-				continue;
-
-			for (auto current_address = reinterpret_cast<unsigned char*>(page_information.BaseAddress); current_address < reinterpret_cast<unsigned char*>(page_information.BaseAddress + page_information.RegionSize - 0x8); current_address++)
-			{
-				if (*current_address != GET_BYTE(pattern_current) && *pattern_current != '\?') {
-					current_match = 0ULL;
-					pattern_current = pattern;
-					continue;
-				}
-
-				if (!current_match)
-					current_match = reinterpret_cast<uintptr_t>(current_address);
-
-				pattern_current += 3;
-				if (pattern_current[-1] == NULL)
-					return current_match;
-			}
-		}
-	}
-
-	return 0ULL;
-}
 menu_variables vars;
-
-size_t operator"" _b(const size_t val)
-{
-	return base + val;
-}
-
-size_t reverse_b(const size_t val)
-{
-	return val - base;
-}
-
-size_t reverse_b(const void* val)
-{
-	return reverse_b(reinterpret_cast<size_t>(val));
-}
-
-size_t operator"" _g(const size_t val)
-{
-	return base + (val - 0x140000000);
-}
-
-size_t reverse_g(const size_t val)
-{
-	return (val - base) + 0x140000000;
-}
-
-size_t reverse_g(const void* val)
-{
-	return reverse_g(reinterpret_cast<size_t>(val));
-}

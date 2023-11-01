@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "sv_main.h"
 #include "game_inc.h"
 

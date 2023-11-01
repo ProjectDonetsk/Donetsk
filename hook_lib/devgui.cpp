@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "devgui.h"
 
 void CL_CreateDevGui_Detour(int fsMenuEntries, const char* modeCfg)

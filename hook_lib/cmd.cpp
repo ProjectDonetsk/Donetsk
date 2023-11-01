@@ -1,3 +1,4 @@
+#include "addr_utils.hpp"
 #include "cmd.h"
 
 void Cmd_Exec_Internal(bool isSuperUser)
