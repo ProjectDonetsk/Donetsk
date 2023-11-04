@@ -11,3 +11,5 @@ dvar_t* Dvar_RegisterString_Detour(const char* dvarName, const char* value, unsi
 
 inline utils::hook::detour dvar_findvarbyname;
 dvar_t* Dvar_FindVarByName_Detour(const char* dvarName);
+
+bool CheatsEnabled();

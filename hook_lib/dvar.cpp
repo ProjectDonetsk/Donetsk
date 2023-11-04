@@ -31,3 +31,7 @@ dvar_t* Dvar_FindVarByName_Detour(const char* dvarName)
 	return ret;
 }
 
+bool CheatsEnabled()
+{
+	return sv_cheats->current.enabled;
+}

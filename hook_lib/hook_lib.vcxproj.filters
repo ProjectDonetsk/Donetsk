@@ -139,6 +139,9 @@
     <ClCompile Include="party.cpp">
       <Filter>hook_lib\game</Filter>
     </ClCompile>
+    <ClCompile Include="debug_output.cpp">
+      <Filter>hook_lib\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\utils\binary_resource.hpp">
@@ -274,6 +277,9 @@
       <Filter>hook_lib\game</Filter>
     </ClInclude>
     <ClInclude Include="party.h">
+      <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="debug_output.h">
       <Filter>hook_lib\game</Filter>
     </ClInclude>
   </ItemGroup>

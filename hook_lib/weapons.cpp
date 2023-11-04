@@ -37,7 +37,24 @@ void Dump_WeaponDef() {
 			WeaponCompleteDef* weap = bg_weaponCompleteDefs[i];
 			if (!weap) continue;
 			if (strstr(weap->szInternalName, "iw8") && !strstr(weap->szInternalName, "watch") && !strstr(weap->szInternalName, "execution") && !strstr(weap->szInternalName, "plyr")) {
+				// WeaponCompleteDef
 				weaponDefJson[weap->szInternalName]["vfxImpactType"] = weap->vfxImpactType;
+				weaponDefJson[weap->szInternalName]["iClipSize"] = weap->iClipSize;
+				weaponDefJson[weap->szInternalName]["penetrateMultiplier"] = weap->penetrateMultiplier;
+
+				// ZoomSettings
+				weaponDefJson[weap->szInternalName]["zoomSetting"]["weapon"]["adsZoomFov"] = weap->zoomSettings.weapon.adsZoomFov;
+
+				// WeaponDamageInfo
+				for (int i = 0; i < 3; ++i) {
+					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["minDamage"] = weap->weapDef->damageInfo.damageData[i].minDamage;
+					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid1Damage"] = weap->weapDef->damageInfo.damageData[i].mid1Damage;
+					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid2Damage"] = weap->weapDef->damageInfo.damageData[i].mid2Damage;
+					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid3Damage"] = weap->weapDef->damageInfo.damageData[i].mid3Damage;
+					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["damage"] = weap->weapDef->damageInfo.damageData[i].damage;
+				}
+
+				// WeaponDef
 				weaponDefJson[weap->szInternalName]["ladderWeapon"] = weap->weapDef->ladderWeapon;
 				weaponDefJson[weap->szInternalName]["canHoldBreath"] = weap->weapDef->canHoldBreath;
 				weaponDefJson[weap->szInternalName]["iFireTime"] = weap->weapDef->iFireTime;
@@ -55,8 +72,6 @@ void Dump_WeaponDef() {
 	else {
 		Com_SetErrorMessage("[DLL ERROR] Must be in-game to dump WeaponDef.");
 	}
-
-
 }
 
 void Load_WeaponDef() {
@@ -73,7 +88,25 @@ void Load_WeaponDef() {
 				WeaponCompleteDef* weap = bg_weaponCompleteDefs[i];
 				if (!weap) continue;
 				if (weaponDefJson.contains(weap->szInternalName)) {
+					// WeaponCompleteDef
 					weap->vfxImpactType = weaponDefJson[weap->szInternalName]["vfxImpactType"];
+					weap->iClipSize = weaponDefJson[weap->szInternalName]["iClipSize"];
+					weap->penetrateMultiplier = weaponDefJson[weap->szInternalName]["penetrateMultiplier"];
+
+					// ZoomSettings
+					weap->zoomSettings.weapon.adsZoomFov = weaponDefJson[weap->szInternalName]["zoomSetting"]["weapon"]["adsZoomFov"];
+
+					// WeaponDef
+
+					// WeaponDamageInfo
+					for (int i = 0; i < 3; ++i) {
+						weap->weapDef->damageInfo.damageData[i].minDamage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["minDamage"];
+						weap->weapDef->damageInfo.damageData[i].mid1Damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid1Damage"];
+						weap->weapDef->damageInfo.damageData[i].mid2Damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid2Damage"];
+						weap->weapDef->damageInfo.damageData[i].mid3Damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid3Damage"];
+						weap->weapDef->damageInfo.damageData[i].damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["damage"];
+					}
+
 					weap->weapDef->ladderWeapon = weaponDefJson[weap->szInternalName]["ladderWeapon"];
 					weap->weapDef->canHoldBreath = weaponDefJson[weap->szInternalName]["canHoldBreath"];
 					weap->weapDef->iFireTime = weaponDefJson[weap->szInternalName]["iFireTime"];

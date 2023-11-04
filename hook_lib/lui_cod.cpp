@@ -11,6 +11,8 @@ void LUI_CoD_RegisterDvars_Detour()
 
 	player_sustainammo = Dvar_RegisterBool("player_sustainAmmo", false, 0, "Firing weapon will not decrease clip ammo.");
 
+	print_debug = Dvar_RegisterBool("print_debug", false, 0, "Print debug output to the external console");
+
 	lui_cod_registerdvars.stub<void>();
 }
 

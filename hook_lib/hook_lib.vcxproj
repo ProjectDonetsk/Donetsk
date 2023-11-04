@@ -165,6 +165,7 @@
     <ClCompile Include="common\utils\string.cpp" />
     <ClCompile Include="common\utils\thread.cpp" />
     <ClCompile Include="ddl.cpp" />
+    <ClCompile Include="debug_output.cpp" />
     <ClCompile Include="devgui.cpp" />
     <ClCompile Include="dvar.cpp" />
     <ClCompile Include="fastfile.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="common\utils\string.hpp" />
     <ClInclude Include="common\utils\thread.hpp" />
     <ClInclude Include="ddl.h" />
+    <ClInclude Include="debug_output.h" />
     <ClInclude Include="devgui.h" />
     <ClInclude Include="dvar.h" />
     <ClInclude Include="fastfile.h" />

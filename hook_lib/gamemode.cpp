@@ -7,8 +7,8 @@ bool Com_GameMode_SupportsFeature_Detour(unsigned int featureID)
 
 	if (com_timescale == nullptr && featureID == 70)
 	{
-		com_timescale = (dvar_t*)Dvar_FindVarByName("LNOTRKNRPS");
-		timescale = (dvar_t*)Dvar_FindVarByName("MSNTNLNQNM");
+		com_timescale = Dvar_FindVarByName("LNOTRKNRPS");
+		timescale = Dvar_FindVarByName("MSNTNLNQNM");
 		// fixes slowmotion final killcam, but not in an ideal way
 	}
 
