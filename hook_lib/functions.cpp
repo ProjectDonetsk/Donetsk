@@ -144,8 +144,8 @@ unsigned __int64 I_atoui64(const char* str) {
 	return func(str);
 }
 
-uintptr_t Dvar_FindVarByName(const char* dvarName) {
-	auto func = reinterpret_cast<uintptr_t(*)(const char*)>(0x1413E63A0_g);
+dvar_t* Dvar_FindVarByName(const char* dvarName) {
+	auto func = reinterpret_cast<dvar_t*(*)(const char*)>(0x1413E63A0_g);
 	return func(dvarName);
 }
 
@@ -520,6 +520,7 @@ dvar_t* sv_cheats;
 dvar_t* spawn_br_gas;
 dvar_t* show_watermark;
 dvar_t* player_sustainammo;
+dvar_t* print_debug;
 
 cmd_function_s set_byte_f_VAR;
 cmd_function_s set_short_f_VAR;

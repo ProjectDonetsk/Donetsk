@@ -1,5 +1,6 @@
 #include "Main.hpp"
 #include "game_inc.h"
+#include "debug_output.h"
 
 #include "addr_utils.hpp"
 
@@ -54,7 +55,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 
 		printf("Base Address: %p\n", 0_b);
 
-		addCustomDvars();
+		debug_output_init(nullptr);
 		addCustomCmds();
 		patchGame();
 

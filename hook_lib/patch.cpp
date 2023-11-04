@@ -153,6 +153,9 @@ void hooks()
 
 	utils::hook::jump(0x141609140_g, ProfanityFilter_IsBadWord_Detour);
 
+	// replacing Com_GameMode_GetActiveGameMode call with CheatsEnabled for jump_height dvar
+	utils::hook::call(0x14110195A_g, CheatsEnabled);
+
 	// remove FF Header version check
 	// db_checkxfileversion.create(0x1411A7840_g, DB_CheckXFileVersion_Detour);
 }
@@ -196,6 +199,9 @@ void patchGame()
 	utils::hook::nop(0x14165E660_g, 5);
 	utils::hook::nop(0x141665289_g, 5);
 	utils::hook::nop(0x14166567D_g, 5);
+
+	// enable functionality for jump_height dvar
+	utils::hook::set<byte>(0x141101946_g, 0xEB);
 
 	// remove FF Header version check
 	// utils::hook::set<byte>(0x1411A776B_g, 0xEB);

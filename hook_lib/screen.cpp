@@ -1,5 +1,6 @@
 #include "addr_utils.hpp"
 #include "screen.h"
+#include "debug_output.h"
 
 void CG_DrawWaterMark()
 {
@@ -11,6 +12,8 @@ void CL_ScreenMP_DrawOverlay_Detour()
 {
 	auto DevGui_Draw = reinterpret_cast<void(*)(int)>(0x1417E5CD0_g);
 	auto Con_DrawConsole = reinterpret_cast<void(*)(int)>(0x1415AE0B0_g);
+
+	gameInitialized = true;
 
 	Con_DrawConsole(0);
 	DevGui_Draw(0);

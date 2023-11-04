@@ -108,6 +108,7 @@ extern dvar_t* sv_cheats;
 extern dvar_t* spawn_br_gas;
 extern dvar_t* show_watermark;
 extern dvar_t* player_sustainammo;
+extern dvar_t* print_debug;
 
 extern cmd_function_s set_byte_f_VAR;
 extern cmd_function_s set_short_f_VAR;
@@ -164,7 +165,7 @@ unsigned __int64 Sys_Microseconds();
 int I_irand(int min, int max);
 unsigned __int64 I_atoui64_hex(const char* str);
 unsigned __int64 I_atoui64(const char* str);
-uintptr_t Dvar_FindVarByName(const char* dvarName);
+dvar_t* Dvar_FindVarByName(const char* dvarName);
 
 void CL_DrawText(const uintptr_t scrPlace, const char* text, int maxChars, uintptr_t font, float x, float y, int horzAlign, int vertAlign, float xScale, float yScale, const float* color, int style);
 dvar_t* Dvar_RegisterString(const char* dvarName, const char* value, unsigned int flags, const char* description);
