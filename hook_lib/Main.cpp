@@ -55,6 +55,9 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 
 		printf("Base Address: %p\n", 0_b);
 
+		// prevents tact error E_REPAIR (28) from happening
+		remove("Data/data/CASCRepair.mrk");
+
 		debug_output_init(nullptr);
 		addCustomCmds();
 		patchGame();
