@@ -11,7 +11,7 @@ Project Donetsk is an attempt to create a more open Modern Warfare 2019 with a s
 ---
 
 # What are some of the goals of project Donetsk
-1. Allow Call of Duty Warzone to be played after Activision officially discontinued it on Septerber 21st, 2023
+1. Allow Call of Duty Warzone to be played after Activision officially discontinued it on September 21st, 2023
 2. Allow Modern Warfare to be played outside of Battle.net and Steam
 3. Allow custom content such as maps, weapons, and cosmetics to be used in Modern Warfare
 4. Add a server browser
@@ -21,12 +21,12 @@ Project Donetsk is an attempt to create a more open Modern Warfare 2019 with a s
 1. Find a compatible version of Modern Warfare
 #### This does not work on the latest version of Modern Warfare (1.67). If you try it on that version you risk a ban
 2. Download the latest dll for Donetsk or compile from source
-3. Put the dll into the game folder and launch game_dx12_ship_replay.exe
+3. Put the dll into the game folder and launch "game_dx12_ship_replay.exe"
 ---
 # Common Errors
 - ```Failed to initialize TACT client: E_STORAGE_INIT (25), Invalid build info ```
-  - Right click on game folder and uncheck read only
+  - Right click on game folder and uncheck "read-only"
 - ```Fatal Error (Of any variety)```
-  - Right click on game folder and uncheck read only
+  - Right click on game folder and uncheck "read-only"
 - ```DirectX call failed with error: DX ERROR UNKNOWN[OX8000FFFF]. ```
-  - This is a directx error, the best solution is to reinstall windows from usb, but you may have some sucess in repairing your windows installation
+  - This is a DirectX error. The best solution is to reinstall Windows from a recovery USB, but you may have some sucess in simply repairing your Windows installation
