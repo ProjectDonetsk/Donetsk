@@ -499,7 +499,7 @@ uintptr_t G_GetEntityPlayerState(gentity_s* ent)
 
 int G_Main_GetTime()
 {
-	return *(int*)0x14BC21730;
+	return *(int*)0x14BC21730_g;
 }
 
 const char* _va(const char* format, ...)
@@ -511,6 +511,34 @@ const char* _va(const char* format, ...)
 	vsnprintf(_buf, 2048, format, ap);
 	_buf[2047] = 0;
 	return _buf;
+}
+
+const char* SEH_StringEd_GetString(const char* string) {
+	auto func = reinterpret_cast <const char* (*)(const char*)>(0x1413CC2A0_g);
+	return func(string);
+}
+
+mapInfo* Com_GameInfo_GetMapInfoForLoadName(const char* mapName) {
+	auto func = reinterpret_cast<mapInfo * (*)(const char*)>(0x1410C77F0_g);
+	return func(mapName);
+}
+
+const char* GetMapName(const char* mapName) {
+	mapInfo* mapinfo = Com_GameInfo_GetMapInfoForLoadName(mapName);
+	if (!mapinfo) return "Unknown Map";
+	if (mapinfo->mapName[0] == 31) return "error";
+	return SEH_StringEd_GetString(mapinfo->mapName);
+}
+
+gameTypeInfo* Com_GameInfo_GetGameTypeForInternalName(const char* mapName) {
+	auto func = reinterpret_cast<gameTypeInfo * (*)(const char*)>(0x1410C7580_g);
+	return func(mapName);
+}
+const char* GetGametypeName(const char* gameType) {
+	gameTypeInfo* gametypeinfo = Com_GameInfo_GetGameTypeForInternalName(gameType);
+	if (!gametypeinfo) return "Unknown Mode";
+	if (gametypeinfo->gameTypeName[0] == 31) return "error";
+	return SEH_StringEd_GetString(gametypeinfo->gameTypeName);
 }
 
 #pragma endregion

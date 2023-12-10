@@ -158,6 +158,7 @@ void hooks()
 
 	// remove FF Header version check
 	// db_checkxfileversion.create(0x1411A7840_g, DB_CheckXFileVersion_Detour);
+	// utils::hook::jump(0x1411A7840_g, DB_CheckXFileVersion_Detour);
 }
 
 void patchGame()
@@ -202,6 +203,9 @@ void patchGame()
 
 	// enable functionality for jump_height dvar
 	utils::hook::set<byte>(0x141101946_g, 0xEB);
+
+	// enable friction dvar
+	utils::hook::set(0x14112141E_g, (int8_t)2);
 
 	// remove FF Header version check
 	// utils::hook::set<byte>(0x1411A776B_g, 0xEB);

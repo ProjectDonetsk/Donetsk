@@ -2,6 +2,7 @@
 #include "game_inc.h"
 #include "debug_output.h"
 
+#include "discord.h"
 #include "addr_utils.hpp"
 
 void entry_point()
@@ -30,6 +31,8 @@ void entry_point()
 extern "C" __declspec(dllexport) int DiscordCreate()
 {
 	CreateThread(0, 0xA0, (LPTHREAD_START_ROUTINE)entry_point, 0, 0, 0);
+
+	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)DiscordThread, 0, 0, 0);
 	return 1;
 }
 
