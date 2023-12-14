@@ -167,6 +167,7 @@
     <ClCompile Include="ddl.cpp" />
     <ClCompile Include="debug_output.cpp" />
     <ClCompile Include="devgui.cpp" />
+    <ClCompile Include="discord.cpp" />
     <ClCompile Include="dvar.cpp" />
     <ClCompile Include="fastfile.cpp" />
     <ClCompile Include="functions.cpp" />
@@ -212,6 +213,8 @@
     <ClInclude Include="ddl.h" />
     <ClInclude Include="debug_output.h" />
     <ClInclude Include="devgui.h" />
+    <ClInclude Include="discord.h" />
+    <ClInclude Include="discord_rpc.h" />
     <ClInclude Include="dvar.h" />
     <ClInclude Include="fastfile.h" />
     <ClInclude Include="functions.hpp" />

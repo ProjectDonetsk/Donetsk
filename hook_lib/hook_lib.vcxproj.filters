@@ -20,6 +20,9 @@
     <Filter Include="hook_lib\game">
       <UniqueIdentifier>{0999b80b-b47c-4d8e-8776-f5c778bcac9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hook_lib\discord">
+      <UniqueIdentifier>{8d71ea0c-2bb4-42e8-9e46-36f0aa487cbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\utils\binary_resource.cpp">
@@ -141,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="debug_output.cpp">
       <Filter>hook_lib\game</Filter>
+    </ClCompile>
+    <ClCompile Include="discord.cpp">
+      <Filter>hook_lib\discord</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +287,12 @@
     </ClInclude>
     <ClInclude Include="debug_output.h">
       <Filter>hook_lib\game</Filter>
+    </ClInclude>
+    <ClInclude Include="discord_rpc.h">
+      <Filter>hook_lib\discord</Filter>
+    </ClInclude>
+    <ClInclude Include="discord.h">
+      <Filter>hook_lib\discord</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

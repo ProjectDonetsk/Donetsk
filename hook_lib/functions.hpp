@@ -102,6 +102,8 @@ struct DBFile
 
 struct Weapon;
 struct scrContext_t;
+struct mapInfo;
+struct gameTypeInfo;
 
 extern dvar_t* player_name;
 extern dvar_t* sv_cheats;
@@ -252,5 +254,15 @@ uintptr_t G_GetEntityPlayerState(gentity_s* ent);
 int G_Main_GetTime();
 
 const char* _va(const char* format, ...);
+
+const char* SEH_StringEd_GetString(const char* string);
+
+mapInfo* Com_GameInfo_GetMapInfoForLoadName(const char* mapName);
+
+const char* GetMapName(const char* mapName);
+
+gameTypeInfo* Com_GameInfo_GetGameTypeForInternalName(const char* mapName);
+
+const char* GetGametypeName(const char* gameType);
 
 #pragma endregion

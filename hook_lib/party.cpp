@@ -10,5 +10,6 @@ void PartyHost_StartPrivateParty_Detour(int localClientNum, int localControllerI
 	{
 		Cbuf_AddText("exec autoexec.cfg");
 		LoadInventory();
+		autoexec = true;
 	}
 }

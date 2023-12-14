@@ -2086,6 +2086,27 @@ struct __declspec(align(8)) OmnvarDef
 	byte userType[1];
 };
 
+struct gameTypeInfo
+{
+	char gameTypeInternalName[12];
+	char gameTypeName[32];
+	char customizedGameTypeName[64];
+	char customizedGameTypeDesc[64];
+};
+
+struct mapInfo
+{
+	char mapName[32];
+	char mapLoadName[16];
+	char mapDescription[32];
+	char mapLoadImage[32];
+	char mapVoteImage[32];
+	char mapCamoTypes[2][16];
+	char mapDefaultGameType[32];
+	char mapGameTypes[1024];
+	int isAliensMap;
+	int mapPack;
+};
 
 struct scrContext_t :class_helper {
 

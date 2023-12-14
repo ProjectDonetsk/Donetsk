@@ -4,7 +4,6 @@
 
 void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 {
-
 	if (scriptfile)
 	{
 		printf("loading gsc: %s\n", scriptfile->name);
@@ -24,9 +23,9 @@ void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 				return;
 			}
 
-			auto Load_scriptFileAsset = reinterpret_cast<void* (*)(size_t size, size_t alignment, int pool, int stack, const char* hint)>(0x140F134D0_g);
+			auto Load_ScriptFileAsset = reinterpret_cast<void*(*)(size_t size, size_t alignment, int pool, int stack, const char* hint)>(0x140F134D0_g);
 
-			char* allocMemAddress = (char*)Load_scriptFileAsset(size, 4, 0, 0, nullptr);
+			char* allocMemAddress = (char*)Load_ScriptFileAsset(size, 4, 0, 0, nullptr);
 
 			script.read(allocMemAddress, size);
 			script.seekg(0, std::ios::beg);
