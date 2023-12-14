@@ -18,7 +18,7 @@ Project Donetsk is an attempt to create a more open Modern Warfare 2019 with a s
 ---
 
 # Installation
-1. Find a compatible version of Modern Warfare
+1. Visit our website for a download of the required game files
 #### This does not work on the latest version of Modern Warfare (1.67). If you try it on that version you risk a ban
 2. Download the latest dll for Donetsk or compile from source
 3. Put the dll into the game folder and launch "game_dx12_ship_replay.exe"
