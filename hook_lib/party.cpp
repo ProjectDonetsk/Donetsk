@@ -10,6 +10,13 @@ void PartyHost_StartPrivateParty_Detour(int localClientNum, int localControllerI
 	{
 		Cbuf_AddText("exec autoexec.cfg");
 		LoadInventory();
+
+		// skips Tutorial stuff
+		Cbuf_AddText("setRankedPlayerData mpTutorialLevel -2147463171");
+		Cbuf_AddText("setRankedPlayerData mpTutorialLevel2 28671");
+		Cbuf_AddText("setRankedPlayerData mpTutorialLevel - 2147454979");
+		Cbuf_AddText("setRankedPlayerData mpTutorialLevel2 61439");
+
 		autoexec = true;
 	}
 }

@@ -111,6 +111,9 @@ extern dvar_t* spawn_br_gas;
 extern dvar_t* show_watermark;
 extern dvar_t* player_sustainammo;
 extern dvar_t* print_debug;
+extern dvar_t* weap_impactType;
+extern dvar_t* weap_dismembermentAlwaysEnabled;
+extern dvar_t* g_dumpScripts;
 
 extern cmd_function_s set_byte_f_VAR;
 extern cmd_function_s set_short_f_VAR;
@@ -172,6 +175,7 @@ dvar_t* Dvar_FindVarByName(const char* dvarName);
 void CL_DrawText(const uintptr_t scrPlace, const char* text, int maxChars, uintptr_t font, float x, float y, int horzAlign, int vertAlign, float xScale, float yScale, const float* color, int style);
 dvar_t* Dvar_RegisterString(const char* dvarName, const char* value, unsigned int flags, const char* description);
 dvar_t* Dvar_RegisterBool(const char* dvarName, bool value, unsigned int flags, const char* description);
+dvar_t* Dvar_RegisterInt(const char* dvarName, bool value, int min, int max, unsigned int flags, const char* description);
 
 void LUI_CoD_LuaCall_ExecNow(uintptr_t luaVM, const char* str);
 bool LUI_LuaCall_Game_IsEntityAlive(uintptr_t luaVM, int entityNum);

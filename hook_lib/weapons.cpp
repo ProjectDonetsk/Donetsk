@@ -12,11 +12,25 @@ void PM_WeaponUseAmmo_Detour(__int64 playerstate, Weapon* weapon, char a3, int a
 	}
 }
 
-void CG_OverrideImpactEffectType(uintptr_t localClientNum, unsigned int sourceEntityNum, int* fxImpactType) // 0x141733CD0_g
+void CG_OverrideImpactEffectType_Detour(uintptr_t localClientNum, unsigned int sourceEntityNum, int* fxImpactType) // 0x141733CD0_g
 {
-	//33 = red, 34 = blue, 35 = pink, 36 = green
-	fxImpactType[2] = 34;
-	cg_overrideimpacteffecttype.stub<__int64>(localClientNum, sourceEntityNum, fxImpactType);
+	if (weap_impactType->current.integer != -1)
+	{
+		int impactType = weap_impactType->current.integer;
+		fxImpactType[2] = impactType;
+		//33 = red, 34 = blue, 35 = pink, 36 = green
+	}
+	// cg_overrideimpacteffecttype.stub<__int64>(localClientNum, sourceEntityNum, fxImpactType);
+	cg_overrideimpacteffecttype.stub<void>(localClientNum, sourceEntityNum, fxImpactType);
+}
+
+bool BG_GetWeaponDismembermentEnabled_Detour(Weapon* weapon, bool alt)
+{
+	if (weap_dismembermentAlwaysEnabled->current.enabled == true)
+	{
+		return true;
+	}
+	return bg_getweapondismembermentenabled.stub<bool>(weapon, alt);
 }
 
 TracerDef* GetTracerDef(const char* asset) {
@@ -53,6 +67,14 @@ void Dump_WeaponDef() {
 					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid3Damage"] = weap->weapDef->damageInfo.damageData[i].mid3Damage;
 					weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["damage"] = weap->weapDef->damageInfo.damageData[i].damage;
 				}
+
+				// spread
+				weaponDefJson[weap->szInternalName]["playerSpread"] = weap->weapDef->playerSpread;
+				weaponDefJson[weap->szInternalName]["hipSpreadStandMax"] = weap->weapDef->hipSpreadStandMax;
+
+				weaponDefJson[weap->szInternalName]["adsMoveSpeedScale"] = weap->weapDef->adsMoveSpeedScale;
+				weaponDefJson[weap->szInternalName]["fAdsIdleAmount"] = weap->weapDef->fAdsIdleAmount;
+				weaponDefJson[weap->szInternalName]["adsSpeedMs_0"] = weap->weapDef->adsSpeedMs[0];
 
 				// WeaponDef
 				weaponDefJson[weap->szInternalName]["ladderWeapon"] = weap->weapDef->ladderWeapon;
@@ -106,6 +128,14 @@ void Load_WeaponDef() {
 						weap->weapDef->damageInfo.damageData[i].mid3Damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["mid3Damage"];
 						weap->weapDef->damageInfo.damageData[i].damage = weaponDefJson[weap->szInternalName]["damageInfo"]["damageData"][i]["damage"];
 					}
+
+					// spread
+					weap->weapDef->playerSpread = weaponDefJson[weap->szInternalName]["playerSpread"];
+					weap->weapDef->hipSpreadStandMax = weaponDefJson[weap->szInternalName]["hipSpreadStandMax"];
+
+					weap->weapDef->adsMoveSpeedScale = weaponDefJson[weap->szInternalName]["adsMoveSpeedScale"];
+					weap->weapDef->fAdsIdleAmount = weaponDefJson[weap->szInternalName]["fAdsIdleAmount"];
+					weap->weapDef->adsSpeedMs[0] = weaponDefJson[weap->szInternalName]["adsSpeedMs_0"];
 
 					weap->weapDef->ladderWeapon = weaponDefJson[weap->szInternalName]["ladderWeapon"];
 					weap->weapDef->canHoldBreath = weaponDefJson[weap->szInternalName]["canHoldBreath"];

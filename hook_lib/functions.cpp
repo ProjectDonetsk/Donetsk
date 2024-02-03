@@ -164,6 +164,11 @@ dvar_t* Dvar_RegisterBool(const char* dvarName, bool value, unsigned int flags, 
 	return func(dvarName, value, flags, description);
 }
 
+dvar_t* Dvar_RegisterInt(const char* dvarName, bool value, int min, int max, unsigned int flags, const char* description) {
+	auto func = reinterpret_cast<dvar_t * (*)(const char* dvarName, bool value, int min, int max, unsigned int flags, const char* description)>(0x1413E7A00_g);
+	return func(dvarName, value, min, max, flags, description);
+}
+
 void LUI_CoD_LuaCall_ExecNow(uintptr_t luaVM, const char* str) {
 	lua_getfield(luaVM, -10002, "Engine");
 	lua_getfield(luaVM, -1, "DAGFFDGFII");
@@ -549,6 +554,9 @@ dvar_t* spawn_br_gas;
 dvar_t* show_watermark;
 dvar_t* player_sustainammo;
 dvar_t* print_debug;
+dvar_t* weap_impactType;
+dvar_t* weap_dismembermentAlwaysEnabled;
+dvar_t* g_dumpScripts;
 
 cmd_function_s set_byte_f_VAR;
 cmd_function_s set_short_f_VAR;

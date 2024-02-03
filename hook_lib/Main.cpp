@@ -36,8 +36,6 @@ extern "C" __declspec(dllexport) int DiscordCreate()
 	return 1;
 }
 
-char buffer[0x5000];
-
 BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 {
 	initAddrUtils();
@@ -65,7 +63,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD Reason, LPVOID lpVoid)
 		addCustomCmds();
 		patchGame();
 
-		printf("Discord: discord.gg/donetsk\n");
+		printf("Website: donetsk.live\n");
 
 		cmd_args = (CmdArgs*)(0x14D20CBD0_g);
 

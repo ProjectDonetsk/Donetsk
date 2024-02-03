@@ -103,6 +103,7 @@ bool ProfanityFilter_IsBadWord_Detour()
 void hooks()
 {
 	process_script_file.create(0x141322350_g, ProcessScriptFile);
+	utils::hook::jump(0x140DFE370_g, Load_ScriptFile_Detour);
 
 	//utils::hook::jump(0x141BD3360_g, sub_141BD3360_Detour);
 
@@ -152,6 +153,9 @@ void hooks()
 	lui_cod_luacall_enginenotifyserver_detour_impl.create(0x1419F7160_g, LUI_CoD_LuaCall_EngineNotifyServer_Detour);
 
 	utils::hook::jump(0x141609140_g, ProfanityFilter_IsBadWord_Detour);
+
+	cg_overrideimpacteffecttype.create(0x141733CD0_g, CG_OverrideImpactEffectType_Detour);
+	bg_getweapondismembermentenabled.create(0x141170C00_g, BG_GetWeaponDismembermentEnabled_Detour);
 
 	// replacing Com_GameMode_GetActiveGameMode call with CheatsEnabled for jump_height dvar
 	utils::hook::call(0x14110195A_g, CheatsEnabled);
