@@ -13,6 +13,11 @@ void LUI_CoD_RegisterDvars_Detour()
 
 	print_debug = Dvar_RegisterBool("print_debug", false, 0, "Print debug output to the external console");
 
+	weap_impactType = Dvar_RegisterInt("weap_impactType", -1, -1, 1000, 0, "Forces an weapon impact type on every weapon. -1 = default");
+	weap_dismembermentAlwaysEnabled = Dvar_RegisterBool("weap_dismembermentAlwaysEnabled", false, 0, "Enables dismemberment effect for all weapons");
+
+	g_dumpScripts = Dvar_RegisterBool("g_dumpScripts", false, 0, "Dump GSC scripts");
+
 	lui_cod_registerdvars.stub<void>();
 }
 
