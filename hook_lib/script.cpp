@@ -147,7 +147,7 @@ void dump_gsc_script(std::ofstream& stream, ScriptFile* scriptfile)
 	std::string buffer;
 	buffer.append(scriptfile->name, strlen(scriptfile->name) + 1);
 
-	buffer.append(scriptfile->compressedLen, 4);
+	buffer.append(reinterpret_cast<char*>(&scriptfile->compressedLen), 4);
 	buffer.append(reinterpret_cast<char*>(&scriptfile->len), 4);
 	buffer.append(reinterpret_cast<char*>(&scriptfile->bytecodeLen), 4);
 	buffer.append(scriptfile->buffer, scriptfile->compressedLen);
@@ -155,6 +155,7 @@ void dump_gsc_script(std::ofstream& stream, ScriptFile* scriptfile)
 
 	stream << buffer;
 }
+
 
 void ProcessScriptFile(void* scrContext, ScriptFile* scriptfile)
 {
