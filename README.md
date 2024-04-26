@@ -1,3 +1,7 @@
+# Notice Depriciation
+`This project is no longer supported by the officials who have created donetsk`
+
+
 <p align="center">
   <img src="/github/assets/donetskbanner.png?raw=true" />
 </p>
@@ -6,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/ProjectDonetsk/Donetsk?style=for-the-badge&color=6437c4&include_prereleases">
-  <a href="https://discord.gg/donetsk"><img src="https://img.shields.io/discord/945420505157083208?color=6437c4&label=discord&logo=discord&logoColor=ffffff&style=for-the-badge"></a>
+  <a href="https://discord.gg/banabyte"><img src="https://img.shields.io/discord/945420505157083208?color=6437c4&label=discord&logo=discord&logoColor=ffffff&style=for-the-badge"></a>
   <img src="https://img.shields.io/github/languages/code-size/ProjectDonetsk/Donetsk?style=for-the-badge&color=6437c4&label=size">
 </p>
 
