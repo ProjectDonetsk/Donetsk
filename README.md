@@ -1,6 +1,7 @@
-# Notice Depriciation
-`This project is no longer supported by the officials who have created donetsk`
+# Deprecation Notice
+This project is unmaintained and no longer supported. Support regarding this project will be instantly dismissed with no help given.
 
+---
 
 <p align="center">
   <img src="/github/assets/donetskbanner.png?raw=true" />
